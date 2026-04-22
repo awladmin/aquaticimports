@@ -114,7 +114,7 @@ export default async function HomePage() {
 
 function Stat({ value, label }: { value: string; label: string }) {
   return (
-    <Card className="border-white/20 bg-white/10 shadow-none backdrop-blur-sm">
+    <Card className="border-white/15 bg-white/5 shadow-none backdrop-blur-[2px]">
       <CardContent className="flex flex-col items-center gap-1 p-4 text-center">
         <span className="text-2xl font-semibold tracking-tight text-brand-700 sm:text-3xl">
           {value}
