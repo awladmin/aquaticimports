@@ -94,7 +94,7 @@ export default async function LoginPage({
               Demo shortcuts
             </CardTitle>
             <CardDescription className="text-xs">
-              For the pitch — skip straight to a signed-in session.
+              For the pitch, skip straight to a signed-in session.
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-2 pt-0">
@@ -113,7 +113,7 @@ export default async function LoginPage({
               </Button>
             </form>
             <form action={loginAction}>
-              <input type="hidden" name="username" value="colin" />
+              <input type="hidden" name="username" value="Robert" />
               <input type="hidden" name="role" value="admin" />
               <input type="hidden" name="redirectTo" value="/admin" />
               <Button

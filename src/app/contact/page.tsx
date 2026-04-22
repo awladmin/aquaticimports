@@ -59,7 +59,7 @@ export default function ContactPage() {
                 title="Opening hours"
                 body={
                   <>
-                    Mon–Fri 8am – 5pm
+                    Mon-Fri 8am, 5pm
                     <br />
                     Saturday &amp; Sunday closed
                   </>

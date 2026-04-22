@@ -59,7 +59,7 @@ export default async function SchedulePage() {
           <p className="mt-2 max-w-2xl text-muted-foreground">
             {available} confirmed arrivals this week. Click the download icon
             on any row to grab the latest stock list for that supplier.
-            Check each row&apos;s deadline — that&apos;s when we need your
+            Check each row&apos;s deadline, that&apos;s when we need your
             order by.
           </p>
         </div>
@@ -75,7 +75,7 @@ export default async function SchedulePage() {
                 <a href="tel:+441753687050" className="underline">
                   01753 687050
                 </a>{" "}
-                — we&apos;ll do our best.
+               , we&apos;ll do our best.
               </p>
             </div>
           </CardContent>

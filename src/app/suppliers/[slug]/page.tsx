@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { DownloadStockButton } from "@/components/download-stock-button";
 import { flagEmoji } from "@/lib/country";
+import { formatOrdinalDateLong } from "@/lib/date";
 import {
   ArrowLeft,
   Calendar,
@@ -44,10 +45,7 @@ export default async function SupplierPage({
   if (!supplier) notFound();
 
   const upcoming = CURRENT_SCHEDULE.find((e) => e.supplierSlug === slug);
-  const updatedDate = new Date(supplier.stockListUpdatedAt).toLocaleDateString(
-    "en-GB",
-    { day: "numeric", month: "long", year: "numeric" }
-  );
+  const updatedDate = formatOrdinalDateLong(supplier.stockListUpdatedAt);
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14">

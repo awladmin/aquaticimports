@@ -1,14 +1,13 @@
 import Link from "next/link";
 import { SUPPLIERS } from "@/data/suppliers";
 import { CURRENT_SCHEDULE, CURRENT_WEEK_COMMENCING } from "@/data/schedule";
-import { NEWS } from "@/data/news";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
   Boxes,
   CalendarDays,
-  Newspaper,
+  Globe2,
   Users,
   Plus,
   ArrowRight,
@@ -31,7 +30,7 @@ export default function AdminDashboard() {
       <header className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">
-            Good afternoon, Colin 👋
+            Good afternoon, Robert 👋
           </h1>
           <p className="text-sm text-muted-foreground">
             Here&apos;s what&apos;s happening on your site today.
@@ -78,20 +77,20 @@ export default function AdminDashboard() {
           alert
         />
         <StatCard
-          icon={Newspaper}
-          label="Published news"
-          value={NEWS.length.toString()}
-          hint="Last post 6 days ago"
+          icon={Globe2}
+          label="Source countries"
+          value="20+"
+          hint="40+ partner suppliers"
         />
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-5">
-        <Card className="border-border/70 lg:col-span-3">
+      <div>
+        <Card className="border-border/70">
           <CardContent className="p-0">
             <div className="flex items-center justify-between border-b border-border/60 p-5">
               <div>
                 <h2 className="text-base font-semibold">
-                  Schedule — week commencing {weekDate}
+                  Schedule, week commencing {weekDate}
                 </h2>
                 <p className="text-xs text-muted-foreground">
                   {scheduled} supplier rows · {available} available · drag to
@@ -106,7 +105,7 @@ export default function AdminDashboard() {
               </Button>
             </div>
             <ul className="divide-y divide-border/60">
-              {CURRENT_SCHEDULE.slice(0, 6).map((e) => {
+              {CURRENT_SCHEDULE.slice(0, 8).map((e) => {
                 const s = SUPPLIERS.find((x) => x.slug === e.supplierSlug);
                 if (!s) return null;
                 return (
@@ -137,52 +136,6 @@ export default function AdminDashboard() {
             </ul>
           </CardContent>
         </Card>
-
-        <Card className="border-border/70 lg:col-span-2">
-          <CardContent className="space-y-4 p-5">
-            <div>
-              <h2 className="text-base font-semibold">Inbox</h2>
-              <p className="text-xs text-muted-foreground">
-                3 unread · 1 trade application
-              </p>
-            </div>
-            <ul className="space-y-3">
-              <MessageRow
-                name="Jamie Roberts"
-                subject="Trade application — The Reef Shop"
-                time="2h ago"
-                tag="Application"
-                unread
-              />
-              <MessageRow
-                name="Sarah Woolf"
-                subject="Follow-up on discus pre-order"
-                time="5h ago"
-                tag="Order"
-                unread
-              />
-              <MessageRow
-                name="Chris Patel"
-                subject="Invoice query — 14 April shipment"
-                time="Yesterday"
-                tag="Accounts"
-                unread
-              />
-              <MessageRow
-                name="Tony H."
-                subject="Thanks — arrived safely"
-                time="2 days ago"
-                tag="Feedback"
-              />
-            </ul>
-            <Button asChild size="sm" variant="outline" className="w-full">
-              <Link href="/admin/messages">
-                View all messages
-                <ArrowRight className="ml-1 h-4 w-4" />
-              </Link>
-            </Button>
-          </CardContent>
-        </Card>
       </div>
 
       <Card className="border-dashed border-brand-300/60 bg-brand-50/40">
@@ -197,7 +150,7 @@ export default function AdminDashboard() {
               </h3>
               <p className="text-sm text-muted-foreground">
                 You can lock next week&apos;s arrivals now and they&apos;ll
-                publish automatically — trade users will get an email alert.
+                publish automatically, trade users will get an email alert.
               </p>
             </div>
           </div>
@@ -252,43 +205,3 @@ function StatCard({
   );
 }
 
-function MessageRow({
-  name,
-  subject,
-  time,
-  tag,
-  unread,
-}: {
-  name: string;
-  subject: string;
-  time: string;
-  tag: string;
-  unread?: boolean;
-}) {
-  return (
-    <li className="flex items-start gap-3">
-      <span className="relative flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand-100 text-xs font-semibold text-brand-800">
-        {name
-          .split(" ")
-          .map((s) => s[0])
-          .slice(0, 2)
-          .join("")}
-        {unread && (
-          <span className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-brand-500 ring-2 ring-background" />
-        )}
-      </span>
-      <div className="min-w-0 flex-1">
-        <div className="flex items-center justify-between gap-2">
-          <p className="truncate text-sm font-medium">{name}</p>
-          <span className="shrink-0 text-[10px] text-muted-foreground">
-            {time}
-          </span>
-        </div>
-        <p className="truncate text-xs text-muted-foreground">{subject}</p>
-        <Badge variant="outline" className="mt-1 text-[10px]">
-          {tag}
-        </Badge>
-      </div>
-    </li>
-  );
-}

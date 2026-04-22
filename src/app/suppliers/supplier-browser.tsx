@@ -15,6 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { flagEmoji } from "@/lib/country";
+import { formatOrdinalDate } from "@/lib/date";
 import { Search, ArrowRight, FileDown } from "lucide-react";
 
 export function SupplierBrowser({
@@ -124,22 +125,8 @@ export function SupplierBrowser({
 
 function SupplierCard({ supplier }: { supplier: Supplier }) {
   return (
-    <Card className="group h-full overflow-hidden border-border/70 transition-all hover:-translate-y-0.5 hover:border-brand-300 hover:shadow-md hover:shadow-brand-500/10">
-      <div
-        className="relative h-32 w-full bg-gradient-to-br from-brand-300/80 via-brand-200/60 to-brand-50"
-        style={{
-          backgroundImage: supplier.featured
-            ? "radial-gradient(circle at 30% 30%, #73C9B4 0%, transparent 55%), radial-gradient(circle at 70% 70%, #7BC8F7 0%, transparent 55%)"
-            : undefined,
-        }}
-      >
-        <div className="absolute right-3 top-3 flex gap-1">
-          {supplier.featured && (
-            <Badge className="bg-white/90 text-brand-700 backdrop-blur">
-              Featured
-            </Badge>
-          )}
-        </div>
+    <Card className="group h-full gap-0 overflow-hidden border-border/70 py-0 transition-all hover:-translate-y-0.5 hover:border-brand-300 hover:shadow-md hover:shadow-brand-500/10">
+      <div className="relative h-32 w-full bg-gradient-to-br from-brand-300/80 via-brand-200/60 to-brand-50">
         <div className="absolute bottom-3 left-4 flex items-center gap-2">
           <span className="text-2xl">{flagEmoji(supplier.countryCode)}</span>
           <span className="rounded-full bg-white/90 px-2.5 py-0.5 text-xs font-medium text-foreground backdrop-blur">
@@ -147,7 +134,7 @@ function SupplierCard({ supplier }: { supplier: Supplier }) {
           </span>
         </div>
       </div>
-      <CardContent className="flex h-[calc(100%-8rem)] flex-col gap-3 p-5">
+      <CardContent className="flex flex-1 flex-col gap-3 p-5">
         <div>
           <h3 className="text-base font-semibold tracking-tight group-hover:text-brand-700">
             {supplier.name}
@@ -170,7 +157,7 @@ function SupplierCard({ supplier }: { supplier: Supplier }) {
         <div className="mt-auto flex items-center justify-between border-t border-border/60 pt-3 text-xs text-muted-foreground">
           <span className="inline-flex items-center gap-1">
             <FileDown className="h-3 w-3" />
-            Stock list {supplier.stockListUpdatedAt}
+            Stock list {formatOrdinalDate(supplier.stockListUpdatedAt)}
           </span>
           <Link
             href={`/suppliers/${supplier.slug}`}

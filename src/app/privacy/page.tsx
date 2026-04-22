@@ -9,7 +9,7 @@ export default function PrivacyPage() {
     <article className="prose prose-slate mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
       <h1 className="text-3xl font-semibold tracking-tight">Privacy policy</h1>
       <p className="mt-3 text-sm text-muted-foreground">
-        Placeholder copy — final policy to be agreed during handover.
+        Placeholder copy, final policy to be agreed during handover.
       </p>
       <div className="mt-8 space-y-5 text-sm leading-relaxed text-muted-foreground">
         <p>

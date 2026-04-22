@@ -23,7 +23,7 @@ export default async function PlaceOrderPage() {
         </h1>
         <p className="mt-3 text-muted-foreground">
           We take orders by telephone and email. Each supplier row in the
-          weekly shipment schedule shows its own order deadline — please check
+          weekly shipment schedule shows its own order deadline, please check
           it before calling through a larger list.
         </p>
       </div>
@@ -38,7 +38,7 @@ export default async function PlaceOrderPage() {
               By telephone
             </h3>
             <p className="mt-1 text-sm text-muted-foreground">
-              For larger orders, last-minute changes or anything urgent — give
+              For larger orders, last-minute changes or anything urgent, give
               us a call.
             </p>
             <a
@@ -49,7 +49,7 @@ export default async function PlaceOrderPage() {
             </a>
             <p className="text-xs text-muted-foreground">
               <Clock className="mr-1 inline h-3 w-3" />
-              Mon–Fri 8am – 5pm &middot; 24hr voicemail
+              Mon-Fri 8am, 5pm &middot; 24hr voicemail
             </p>
           </CardContent>
         </Card>
@@ -63,7 +63,7 @@ export default async function PlaceOrderPage() {
               By email
             </h3>
             <p className="mt-1 text-sm text-muted-foreground">
-              Email your list — preferably as an annotated stock list or
+              Email your list, preferably as an annotated stock list or
               numbered line items with the supplier and week.
             </p>
             <a
@@ -87,7 +87,7 @@ export default async function PlaceOrderPage() {
             </h3>
             <p className="mt-1 text-sm text-muted-foreground">
               Download the current stock list for the supplier you&apos;re
-              ordering from — deadlines vary by arrival day.
+              ordering from, deadlines vary by arrival day.
             </p>
           </div>
           <div className="flex gap-2">

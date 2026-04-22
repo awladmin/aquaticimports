@@ -7,9 +7,7 @@ import {
   LayoutDashboard,
   Boxes,
   CalendarDays,
-  Newspaper,
   Users,
-  Mail,
   Settings,
 } from "lucide-react";
 
@@ -17,9 +15,7 @@ const ITEMS = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/suppliers", label: "Suppliers", icon: Boxes },
   { href: "/admin/schedule", label: "Import schedule", icon: CalendarDays },
-  { href: "/admin/news", label: "News", icon: Newspaper },
   { href: "/admin/users", label: "Trade users", icon: Users },
-  { href: "/admin/messages", label: "Messages", icon: Mail },
   { href: "/admin/settings", label: "Settings", icon: Settings },
 ];
 

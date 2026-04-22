@@ -17,7 +17,7 @@ export function ContactForm() {
     await new Promise((r) => setTimeout(r, 600));
     setSubmitting(false);
     toast.success("Message sent", {
-      description: "Thanks — we&apos;ll come back to you within one working day.",
+      description: "Thanks, we&apos;ll come back to you within one working day.",
     });
     (e.target as HTMLFormElement).reset();
   }

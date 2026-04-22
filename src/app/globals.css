@@ -56,6 +56,26 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+  --animate-hero-pan: hero-pan 28s ease-in-out infinite alternate;
+  --animate-hero-float: hero-float 14s ease-in-out infinite alternate;
+}
+
+@keyframes hero-pan {
+  0% {
+    transform: scale(1.06) translate3d(-1%, -1%, 0);
+  }
+  100% {
+    transform: scale(1.12) translate3d(1.5%, 1%, 0);
+  }
+}
+
+@keyframes hero-float {
+  0% {
+    transform: translate3d(-2%, 0, 0);
+  }
+  100% {
+    transform: translate3d(2%, -1%, 0);
+  }
 }
 
 :root {

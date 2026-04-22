@@ -22,6 +22,19 @@ export const metadata: Metadata = {
   },
   description:
     "Direct importers and distributors of quality aquatic livestock and plants to the UK trade. Established 1999.",
+  icons: {
+    icon: [
+      { url: "/favicon/favicon.ico", sizes: "any" },
+      { url: "/favicon/favicon.svg", type: "image/svg+xml" },
+      { url: "/favicon/favicon-96x96.png", type: "image/png", sizes: "96x96" },
+    ],
+    apple: [{ url: "/favicon/apple-touch-icon.png", sizes: "180x180" }],
+  },
+  manifest: "/favicon/site.webmanifest",
+};
+
+export const viewport = {
+  themeColor: "#73C9B4",
 };
 
 export default function RootLayout({

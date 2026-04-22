@@ -2,9 +2,10 @@ import Link from "next/link";
 import { getSession } from "@/lib/auth";
 import { logoutAction } from "@/lib/auth-actions";
 import { visibleNav } from "@/lib/nav";
+import { cn } from "@/lib/utils";
 import { BrandLogo } from "./brand-logo";
 import { NavLink } from "./nav-link";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -50,15 +51,18 @@ export async function SiteHeader() {
         <div className="ml-auto flex items-center gap-2">
           {isLoggedIn ? (
             <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="gap-2">
-                  <span className="flex h-7 w-7 items-center justify-center rounded-full bg-brand-100 text-brand-700">
-                    <User className="h-3.5 w-3.5" />
-                  </span>
-                  <span className="hidden text-sm font-medium sm:inline">
-                    {session?.username}
-                  </span>
-                </Button>
+              <DropdownMenuTrigger
+                className={cn(
+                  buttonVariants({ variant: "ghost", size: "sm" }),
+                  "gap-2"
+                )}
+              >
+                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-brand-100 text-brand-700">
+                  <User className="h-3.5 w-3.5" />
+                </span>
+                <span className="hidden text-sm font-medium sm:inline">
+                  {session?.username}
+                </span>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuLabel>
@@ -75,52 +79,61 @@ export async function SiteHeader() {
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 {session?.role === "admin" && (
-                  <DropdownMenuItem asChild>
-                    <Link href="/admin">
-                      <LayoutDashboard className="mr-2 h-4 w-4" />
-                      Admin dashboard
-                    </Link>
-                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    render={
+                      <Link href="/admin">
+                        <LayoutDashboard className="mr-2 h-4 w-4" />
+                        Admin dashboard
+                      </Link>
+                    }
+                  />
                 )}
-                <DropdownMenuItem asChild>
-                  <Link href="/account">
-                    <User className="mr-2 h-4 w-4" />
-                    My account
-                  </Link>
-                </DropdownMenuItem>
+                <DropdownMenuItem
+                  render={
+                    <Link href="/account">
+                      <User className="mr-2 h-4 w-4" />
+                      My account
+                    </Link>
+                  }
+                />
                 <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <form action={logoutAction} className="w-full">
-                    <button
-                      type="submit"
-                      className="flex w-full cursor-pointer items-center"
-                    >
-                      <LogOut className="mr-2 h-4 w-4" />
-                      Log out
-                    </button>
-                  </form>
-                </DropdownMenuItem>
+                <form action={logoutAction}>
+                  <DropdownMenuItem
+                    render={
+                      <button
+                        type="submit"
+                        className="flex w-full cursor-pointer items-center"
+                      >
+                        <LogOut className="mr-2 h-4 w-4" />
+                        Log out
+                      </button>
+                    }
+                  />
+                </form>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <Button asChild size="sm" variant="outline" className="gap-1.5">
-              <Link href="/login">
-                <ShieldCheck className="h-4 w-4" />
-                Trade login
-              </Link>
-            </Button>
+            <Link
+              href="/login"
+              className={cn(
+                buttonVariants({ variant: "outline", size: "sm" }),
+                "gap-1.5"
+              )}
+            >
+              <ShieldCheck className="h-4 w-4" />
+              Trade login
+            </Link>
           )}
 
           <Sheet>
-            <SheetTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="lg:hidden"
-                aria-label="Open menu"
-              >
-                <Menu className="h-5 w-5" />
-              </Button>
+            <SheetTrigger
+              aria-label="Open menu"
+              className={cn(
+                buttonVariants({ variant: "ghost", size: "icon" }),
+                "lg:hidden"
+              )}
+            >
+              <Menu className="h-5 w-5" />
             </SheetTrigger>
             <SheetContent side="right" className="w-[85vw] max-w-sm">
               <SheetHeader>
