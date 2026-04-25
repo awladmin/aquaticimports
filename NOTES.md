@@ -1,5 +1,20 @@
 # Aquatic Imports — Project Notes
 
+## Status — 2026-04-22
+
+**POC is pitch-ready and pushed to `main`.** Last commit: `f9be433`.
+
+Pitch hasn't happened yet. When you resume:
+
+- `npm run dev` → http://localhost:3000
+- Demo flow is in the "Demo walkthrough for the pitch" section below
+- Non-technical talking points for the client are in chat history
+  (wholesale benefits, admin simplicity, why not WordPress, speed)
+- Before going live (phase 2), optimise `public/hero.mp4` — see tasks
+
+If the client says yes, pick up from **Tasks → Phase 2** — Supabase
+modelling, data migration from WP, real auth, deployment to Vercel.
+
 ## What this is
 
 A **pitch POC** — a polished demo built to win the rebuild job for
