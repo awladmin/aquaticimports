@@ -12,7 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { BrandLogo } from "@/components/brand-logo";
-import { ShieldCheck, UserCog } from "lucide-react";
+import { ShieldCheck } from "lucide-react";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -36,8 +36,8 @@ export default async function LoginPage({
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl">Trade login</CardTitle>
             <CardDescription>
-              Enter your trade credentials to see stock lists, shipment
-              schedule and supplier info.
+              Enter your trade credentials to access this week&apos;s
+              stocklists.
             </CardDescription>
           </CardHeader>
           <form action={loginAction}>
@@ -88,54 +88,13 @@ export default async function LoginPage({
           </form>
         </Card>
 
-        <Card className="mt-4 border-dashed border-brand-300/60 bg-brand-50/50">
-          <CardHeader className="space-y-1 pb-2">
-            <CardTitle className="text-sm font-semibold">
-              Demo shortcuts
-            </CardTitle>
-            <CardDescription className="text-xs">
-              For the pitch, skip straight to a signed-in session.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="flex flex-col gap-2 pt-0">
-            <form action={loginAction}>
-              <input type="hidden" name="username" value="trade-demo" />
-              <input type="hidden" name="role" value="trade" />
-              <input type="hidden" name="redirectTo" value={redirectTo ?? "/"} />
-              <Button
-                type="submit"
-                variant="outline"
-                size="sm"
-                className="w-full justify-start"
-              >
-                <ShieldCheck className="mr-1.5 h-4 w-4 text-brand-600" />
-                Enter as trade customer
-              </Button>
-            </form>
-            <form action={loginAction}>
-              <input type="hidden" name="username" value="Robert" />
-              <input type="hidden" name="role" value="admin" />
-              <input type="hidden" name="redirectTo" value="/admin" />
-              <Button
-                type="submit"
-                variant="outline"
-                size="sm"
-                className="w-full justify-start"
-              >
-                <UserCog className="mr-1.5 h-4 w-4 text-brand-600" />
-                Enter admin dashboard
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
-
         <p className="mt-6 text-center text-xs text-muted-foreground">
           Don&apos;t have a trade account?{" "}
           <Link
             href="/contact"
             className="font-medium text-brand-700 underline-offset-4 hover:underline"
           >
-            Apply here
+            Request access
           </Link>
           .
         </p>

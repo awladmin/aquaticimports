@@ -14,8 +14,8 @@ export function BrandLogo({
 }) {
   const heights: Record<Size, number> = {
     sm: 28,
-    md: 44,
-    lg: 52,
+    md: 64,
+    lg: 76,
     xl: 96,
     "2xl": 140,
   };

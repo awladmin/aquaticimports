@@ -3,20 +3,10 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import {
-  LayoutDashboard,
-  Boxes,
-  CalendarDays,
-  Users,
-  Settings,
-} from "lucide-react";
+import { FolderOpen } from "lucide-react";
 
 const ITEMS = [
-  { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/admin/suppliers", label: "Suppliers", icon: Boxes },
-  { href: "/admin/schedule", label: "Import schedule", icon: CalendarDays },
-  { href: "/admin/users", label: "Trade users", icon: Users },
-  { href: "/admin/settings", label: "Settings", icon: Settings },
+  { href: "/admin/stocklists", label: "Stocklists", icon: FolderOpen },
 ];
 
 export function AdminNav() {

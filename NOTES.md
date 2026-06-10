@@ -1,19 +1,233 @@
 # Aquatic Imports — Project Notes
 
-## Status — 2026-04-22
+## Status — 2026-05-26
 
-**POC is pitch-ready and pushed to `main`.** Last commit: `f9be433`.
+**Rob has reviewed the POC and is on board, with a much slimmer scope.**
+Awaiting his go-ahead after he's chatted it through with Annie. Build has
+not started.
 
-Pitch hasn't happened yet. When you resume:
+### Scope pivot (from Rob's 20 May email)
+
+Out of the POC: supplier directory, schedule builder, admin CRUD, user
+approval flows, news, all the supplier-centric data shape. None of it
+is wanted.
+
+In scope for the actual build:
+
+- Public marketing site (home + contact + privacy), keeping the existing
+  Aquatic Imports logo (retain/enhance, no redesign)
+- Drop the reef hero video; use logistics/import imagery (cargo, freight,
+  warehouse — Rob may send his own photos)
+- Reinstate the Heathrow proximity map graphic at the bottom of the
+  homepage (old WP site had one)
+- Front-page copy stays close to the existing aquaticimports.com tone
+- Secure login, fresh credentials for everyone (clean break from old
+  WP accounts)
+- One folder behind the login called "Stocklists" (possibly a second
+  for shipment reports). Dropbox-style: Rob + Annie drag-and-drop
+  upload, customers one-click download
+- Admin file management screen: list, upload, individual delete,
+  multi-select + bulk delete. That's it.
+
+### Revised quote (sent 21 May, attached on email thread)
+
+- Build: £1,000 + VAT (down from earlier quote — scope is slimmer)
+- Care plan: £100/month + VAT, first 3 months free
+- File: `Aquatic_Imports_Quote_Robert_Revised_v2.pdf` (Gmail thread
+  `19e497b17998bc2e`)
+
+### Assets received from Rob (26 May)
+
+- `AquaticImports.jpg` — high-res JPG of the existing logo (blue
+  wordmark with green globe in the "Q"). Currently lives on Desktop;
+  pull into the build when scaffolding starts. Resolution is fine for
+  screen; consider tracing to SVG for crisp print/retina.
+- Two IONOS SiteAnalytics PDFs (Oct 2022 baseline + Feb 2026 current).
+  Real human traffic is small; `/wp-login.php` is being brute-forced
+  hard (33% of all page hits in Feb 2026); `/import-lists/` is the
+  page trade users actually visit.
+
+### Open questions awaiting Rob
+
+Sent in Claudia's 21 May reply, no answer yet:
+
+1. Roughly how many customer logins (20 / 100 / 500)?
+2. Self-service password reset, or Rob handles resets manually?
+3. Want a per-file/per-user download log?
+
+Defaults if no answer by the time we start: assume ~20 users,
+self-service reset, no download log (add later if asked).
+
+### Latest correspondence with Rob
+
+- 20 May 2026 — Rob's reply with the scope changes
+- 21 May 2026 — Claudia's reply confirming, revised quote attached,
+  three open questions sent
+- 26 May 2026 — Rob sent the logo + two analytics PDFs
+- 26 May 2026 — Claudia acknowledged the assets; ball is in Rob's
+  court to chat with Annie and give the green light to crack on
+
+### What to do when Rob greens it
+
+1. Decide: strip the POC in place, or scaffold a fresh repo? (See the
+   "POC is not phase 2" note — leans toward fresh build given how much
+   of the POC is now out of scope.)
+2. Pick auth + storage stack. Supabase Auth + Storage is still the
+   default plan, but the scope is small enough that Clerk + S3, or
+   even a single Vercel deployment with NextAuth + Vercel Blob, would
+   work too.
+3. Set up the file-management admin screen first — it's the actual
+   useful surface for Rob and Annie.
+4. Marketing site (home, contact, privacy) second, with the new
+   logistics imagery + Heathrow map.
+5. Stage on a Vercel preview URL; DNS cutover at aquaticimports.com
+   only after Rob signs off.
+
+## Status — 2026-04-22 (historical — POC pitch-ready)
+
+**POC pushed to `main`.** Last commit: `f9be433`.
 
 - `npm run dev` → http://localhost:3000
 - Demo flow is in the "Demo walkthrough for the pitch" section below
 - Non-technical talking points for the client are in chat history
   (wholesale benefits, admin simplicity, why not WordPress, speed)
-- Before going live (phase 2), optimise `public/hero.mp4` — see tasks
+- Most of the POC's functionality is now out of scope (see 2026-05-26
+  status above) — treat the POC as a visual reference for layout,
+  brand palette, and shadcn primitives only.
 
-If the client says yes, pick up from **Tasks → Phase 2** — Supabase
-modelling, data migration from WP, real auth, deployment to Vercel.
+## Security incident — May 2026
+
+**Trigger:** Robert reported Google's "Website With Harmful Software"
+warning on Safari/iOS, appearing on first visit per device and then
+suppressed by Safari's own UX. Investigation date: 2026-05-11.
+
+**Email report sent to Robert** — awaiting his reply before any
+remediation work. **No changes were made to the live site during the
+investigation** — all checks were read-only (find/grep/SELECT). The
+SFTP password he gave us is in chat history only, not saved anywhere
+durable; he plans to rotate it as part of the recommendations.
+
+### Headline findings
+
+- **Site is not currently hacked.** Filesystem, database, served HTML
+  and theme/plugin code are clean of the standard injection patterns.
+- **Site WAS compromised** — confirmed by access log analysis. Between
+  ~20 Mar and 8 Apr 2026 a fake plugin folder
+  `/wp-content/plugins/sammerrily/common/m4.php?pass=123` (a PHP web
+  shell) returned 200 OK with 5–46 KB payloads to multiple attacker IPs.
+  ~30 other backdoor URLs (`/_audit_*.php`, `/_verify_*.php`,
+  `/.well-known/admin.php`, `/.well-known/wso.php`, `/adminer.php`,
+  `/manager.php`, etc.) also returned 200 OK during the same window.
+- **Cleanup happened ~21 Apr 2026** — `sftp.log.17.gz` shows a flurry
+  of SFTP logins that day, and from 25 Apr onwards every backdoor URL
+  returns 404. Disk inspection on 2026-05-11 confirms none of those
+  files exist anymore.
+- Google's flag is **most likely** a stale carryover from the active
+  compromise window — but see open question below.
+
+### What was verified clean (2026-05-11)
+
+- No PHP/CGI in `wp-content/uploads/`, no `mu-plugins/`, no WP
+  drop-ins, no hidden dot-prefixed PHP, no `.well-known/`/`.tmb/`/`.dj/`
+  dirs.
+- All 4,786 PHP files grep'd for `eval(base64_decode)`, `assert($_*)`,
+  obfuscated `preg_replace /e`, `create_function` — zero hits outside
+  legitimate stock code.
+- Every `.htaccess` on the server — standard rules only.
+- Active theme `twentyeleven-child` — every file dated Jan 2013, no
+  modifications.
+- `wp_users` — 7 admin accounts, all created 2011–2013, no new
+  admins; recent users are legitimate Maidenhead Aquatics branch
+  subscribers. `users_can_register=0`.
+- `wp_posts`/`wp_postmeta`/`wp_options` — no `<script>`, `eval(`,
+  `iframe`, foreign-URL injection in any row regardless of status.
+- `wp_options.cron` — only standard WP + UpdraftPlus hooks.
+- WPCode plugin (formerly insert-headers-and-footers): only 2
+  snippets exist, both in **draft** status (inert), both legitimate
+  library snippets from July 2023.
+- Homepage + spot-checked pages: no foreign scripts, no cloaking
+  (Googlebot and Chrome get identical bodies modulo the per-request
+  `_login=` nonce).
+- WP core is current (6.9.4, refreshed 4 Feb 2026).
+
+### Open question — intermittent behaviour
+
+The "stale Google flag" theory **does not fully explain** Robert's
+observation that the warning appears intermittently rather than
+consistently per device. Possibilities left to investigate **if Robert
+sees the warning again after a credential rotation**:
+
+- Conditional injection (random %, geo, ASN, time-of-day) — would
+  require reproducing it
+- Stored injection in a less-trafficked URL/path we didn't fetch
+- Google's SafeBrowsing cache toggling on/off as their crawler
+  rescans
+- Per-device Safari UX (warning shown once per device per
+  dismissal-TTL — could look intermittent across multiple devices
+  even if Google's flag is constant)
+
+Did NOT get as far as: scanning all 19,000 attachments and posts for
+embedded JS, fetching the site from multiple geo IPs, or pulling the
+full plugin code of the abandoned 2013–2016 plugins.
+
+### Root cause (most plausible)
+
+23 active plugins, ~9 of which had no upstream updates since 2013–2016
+and are documented attack surface (especially
+`custom-content-type-manager`, `comprehensive-google-map-plugin`,
+`platformist-quadendpointer`, `lightbox-plus`, `wordpress-access-control`,
+`smart-youtube`, `postmash-*`, `content-slide`).
+
+### Recommendations (sent to Robert; rough effort estimates)
+
+1. **Submit Google Search Console review request** — 10–15 min once
+   logged in. Path: Security & Manual Actions → Security Issues →
+   Request Review. Robert needs Search Console access first (see
+   "Access" below).
+2. **Rotate all credentials** — 30–60 min total. SFTP, WP admin
+   passwords (×7), DB password, WP salts in `wp-config.php`, IONOS
+   control panel.
+3. **Disable XML-RPC** — 5 min. Add `RedirectMatch 403 /xmlrpc.php`
+   to root `.htaccess` (currently being brute-forced from CN IPs,
+   already 403-ing but still wasting cycles).
+4. **Remove the 9 abandoned plugins** — 30–60 min. Deactivate via
+   wp-admin, regression-test, delete via SFTP.
+5. **Lock down `wp-admin`** — 30 min. `.htaccess` + `htpasswd` in
+   front of the admin dir (IONOS supports both).
+6. **Strategic:** accelerate the Next.js + Supabase rebuild. The
+   pitch POC in this repo (`f9be433`) is ready.
+
+### Search Console access
+
+Robert needs to be added as a verified owner/user on the existing
+Search Console property for aquaticimports.com. Whoever currently has
+ownership goes to: Settings → Users and permissions → Add user →
+enter his Google-associated email → role "Owner" or "Full". If nobody
+still has access, he can re-verify ownership via a DNS TXT record at
+IONOS or by uploading the Google-supplied HTML file to the web root.
+The Google account used must be one he can sign into — if
+`robert@aquaticimports.com` isn't a Google Workspace address, he'll
+need to associate a personal Google account with it or use a different
+one.
+
+### Useful artefacts captured during investigation
+
+- Production WordPress runs on IONOS shared hosting, server
+  `home451708012.1and1-data.host`, hostname `infong-uk10`, public
+  IPv4 `82.165.83.39` (shared with other IONOS customers).
+- DB host `db451711348.db.1and1.com`, MariaDB 10.5 with `ANSI_QUOTES`
+  on (so use `'value'` not `"value"` in SQL).
+- Web root: `/homepages/36/d451708012/htdocs` (SFTP) /
+  `/kunden/homepages/36/d451708012/htdocs` ($HOME in shell).
+- SFTP CWD is already the web root — upload with relative paths.
+- All SFTP logins (legit + suspect) appear as source IP `10.71.56.0`
+  because IONOS NATs through their internal gateway. Source IP in
+  the SFTP log is therefore not useful for attribution.
+- Apr 21 2026 SFTP burst — almost certainly the previous cleanup
+  pass, not an intrusion.
+- Active plugins list (23): see `wp_options.active_plugins`.
+- WP-Cron `wpcode_usage_tracking_cron` is harmless (it's the WPCode
+  plugin's own usage telemetry).
 
 ## What this is
 

@@ -20,8 +20,6 @@ export function SiteFooter() {
           </h4>
           <ul className="space-y-2 text-sm">
             <FooterLink href="/">Home</FooterLink>
-            <FooterLink href="/suppliers">Supplier info</FooterLink>
-            <FooterLink href="/shipment-schedule">Shipment schedule</FooterLink>
             <FooterLink href="/contact">Contact us</FooterLink>
             <FooterLink href="/privacy">Privacy policy</FooterLink>
           </ul>

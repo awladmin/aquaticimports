@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { getSession } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
@@ -8,7 +9,7 @@ import {
   Globe2,
   ShieldCheck,
   Truck,
-  Calendar,
+  Award,
   Fish,
   Handshake,
 } from "lucide-react";
@@ -20,28 +21,14 @@ export default async function HomePage() {
   return (
     <>
       <section className="relative overflow-hidden">
-        {/* Hero background layers (bottom -> top):
-            1. Aqua radial gradient fallback (shows while video loads or on error)
-            2. Looping hero video (public/hero.mp4), with hero.jpg as poster
-            3. Vignette overlays for text legibility */}
         <div className="pointer-events-none absolute inset-0 -z-10">
-          <div
-            className="absolute inset-0 opacity-40"
-            style={{
-              backgroundImage:
-                "radial-gradient(circle at 20% 20%, #73C9B4 0%, transparent 45%), radial-gradient(circle at 80% 10%, #7BC8F7 0%, transparent 40%), radial-gradient(circle at 60% 80%, #A3E0D0 0%, transparent 50%)",
-            }}
-          />
-          <video
-            src="/hero.mp4"
-            poster="/hero.jpg"
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="auto"
-            style={{ backgroundColor: "#73C9B4" }}
-            className="absolute inset-0 h-[102%] w-[102%] -translate-x-[1%] -translate-y-[1%] object-cover"
+          <Image
+            src="/hero.jpg"
+            alt="Cargo aircraft at London Heathrow"
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-background/25 via-background/15 to-background" />
           <div className="absolute inset-0 bg-gradient-to-r from-background/25 via-transparent to-background/25" />
@@ -61,21 +48,13 @@ export default async function HomePage() {
             </p>
             <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
               {isLoggedIn ? (
-                <>
-                  <Link
-                    href="/shipment-schedule"
-                    className="inline-flex h-11 items-center justify-center gap-1 rounded-lg bg-brand-500 px-5 text-sm font-medium text-white shadow-sm hover:bg-brand-600"
-                  >
-                    This week&apos;s schedule
-                    <ArrowRight className="ml-1 h-4 w-4" />
-                  </Link>
-                  <Link
-                    href="/suppliers"
-                    className="inline-flex h-11 items-center justify-center rounded-lg border border-border bg-background px-5 text-sm font-medium hover:bg-muted"
-                  >
-                    Browse suppliers
-                  </Link>
-                </>
+                <Link
+                  href="/stocklists"
+                  className="inline-flex h-11 items-center justify-center gap-1 rounded-lg bg-brand-500 px-5 text-sm font-medium text-white shadow-sm hover:bg-brand-600"
+                >
+                  Open Stocklists
+                  <ArrowRight className="ml-1 h-4 w-4" />
+                </Link>
               ) : (
                 <>
                   <Link
@@ -89,7 +68,7 @@ export default async function HomePage() {
                     href="/contact"
                     className="inline-flex h-11 items-center justify-center rounded-lg border border-border bg-background px-5 text-sm font-medium hover:bg-muted"
                   >
-                    Apply for an account
+                    Request access
                   </Link>
                 </>
               )}
@@ -97,9 +76,9 @@ export default async function HomePage() {
           </div>
 
           <div className="mx-auto mt-12 grid max-w-5xl grid-cols-2 gap-4 sm:grid-cols-4">
-            <Stat value="40+" label="Global suppliers" />
-            <Stat value="20+" label="Source countries" />
             <Stat value="1999" label="Established" />
+            <Stat value="100%" label="Trade only" />
+            <Stat value="20+" label="Source countries" />
             <Stat value="5" label="Delivery days / week" />
           </div>
         </div>
@@ -194,7 +173,7 @@ function PublicPanels({ isLoggedIn }: { isLoggedIn: boolean }) {
     {
       icon: Globe2,
       title: "Global supply network",
-      body: "Vetted partner suppliers across more than 20 countries. Many are exclusive to Independent Aquatic Imports and personally audited by our team.",
+      body: "Partner suppliers across more than 20 countries, many exclusive to Independent Aquatic Imports and personally audited by our team.",
     },
     {
       icon: Handshake,
@@ -217,9 +196,9 @@ function PublicPanels({ isLoggedIn }: { isLoggedIn: boolean }) {
       body: "Arrivals Tuesday through Friday, consolidated at our Slough facility and delivered direct to your holding.",
     },
     {
-      icon: Calendar,
-      title: "Transparent schedule",
-      body: "Shipment schedule and stock lists updated daily as suppliers confirm. Trade accounts see everything live.",
+      icon: Award,
+      title: "Established 1999",
+      body: "Over 25 years supplying some of the UK's largest wholesalers and consolidated importers. A name the trade knows.",
     },
   ];
   return (
