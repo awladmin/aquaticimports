@@ -26,17 +26,16 @@ export async function uploadStocklist(formData: FormData) {
   return { ok: true };
 }
 
-export async function deleteStocklists(formData: FormData) {
+export async function deleteStocklists(formData: FormData): Promise<void> {
   await requireAdmin();
   const supabase = await createClient();
 
   const names = formData.getAll("name").map(String).filter(Boolean);
-  if (names.length === 0) return { ok: false, error: "Nothing selected." };
+  if (names.length === 0) return;
 
   const { error } = await supabase.storage.from(BUCKET).remove(names);
-  if (error) return { ok: false, error: error.message };
+  if (error) throw new Error(`Failed to delete: ${error.message}`);
 
   revalidatePath("/admin/stocklists");
   revalidatePath("/stocklists");
-  return { ok: true };
 }

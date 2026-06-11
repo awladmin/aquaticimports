@@ -50,21 +50,20 @@ export async function createUser(formData: FormData): Promise<CreateUserResult> 
   return { ok: true, email, password };
 }
 
-export async function deleteUser(formData: FormData) {
+export async function deleteUser(formData: FormData): Promise<void> {
   const session = await requireAdmin();
   const userId = (formData.get("userId") as string | null) ?? "";
 
-  if (!userId) return { ok: false, error: "Missing user id." };
+  if (!userId) throw new Error("Missing user id.");
   if (userId === session.userId) {
-    return { ok: false, error: "You can't delete your own account." };
+    throw new Error("You can't delete your own account.");
   }
 
   const admin = await createAdminClient();
   const { error } = await admin.auth.admin.deleteUser(userId);
-  if (error) return { ok: false, error: error.message };
+  if (error) throw new Error(error.message);
 
   revalidatePath("/admin/users");
-  return { ok: true };
 }
 
 export async function updateUserRole(formData: FormData) {
