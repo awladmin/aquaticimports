@@ -86,6 +86,7 @@ export function SiteFooter() {
             <FooterLink href="/">Home</FooterLink>
             <FooterLink href="/contact">Contact us</FooterLink>
             <FooterLink href="/privacy">Privacy policy</FooterLink>
+            <FooterLink href="/terms">Terms &amp; conditions</FooterLink>
           </ul>
         </div>
       </div>
