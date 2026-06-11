@@ -9,6 +9,7 @@ import {
 const requireAdminMock = vi.hoisted(() => vi.fn());
 const createAdminClientMock = vi.hoisted(() => vi.fn());
 const revalidatePathMock = vi.hoisted(() => vi.fn());
+const redirectMock = vi.hoisted(() => vi.fn());
 
 vi.mock("@/lib/auth", () => ({
   requireAdmin: requireAdminMock,
@@ -20,6 +21,10 @@ vi.mock("@/lib/supabase/server", () => ({
 
 vi.mock("next/cache", () => ({
   revalidatePath: revalidatePathMock,
+}));
+
+vi.mock("next/navigation", () => ({
+  redirect: redirectMock,
 }));
 
 function adminClientDouble(opts: {
@@ -57,6 +62,10 @@ beforeEach(() => {
   requireAdminMock.mockReset();
   createAdminClientMock.mockReset();
   revalidatePathMock.mockReset();
+  redirectMock.mockReset();
+  redirectMock.mockImplementation((url: string) => {
+    throw new Error(`REDIRECT:${url}`);
+  });
   requireAdminMock.mockResolvedValue({
     userId: "admin-1",
     email: "rob@x.com",
@@ -149,12 +158,13 @@ describe("deleteUser", () => {
     await expect(deleteUser(fd)).rejects.toThrow(/own account/i);
   });
 
-  it("deletes a different user and revalidates", async () => {
+  it("deletes a different user, revalidates, and redirects to the clean URL", async () => {
     createAdminClientMock.mockResolvedValue(adminClientDouble({}));
     const fd = new FormData();
     fd.set("userId", "u-victim");
-    await deleteUser(fd);
+    await expect(deleteUser(fd)).rejects.toThrow("REDIRECT:/admin/users");
     expect(revalidatePathMock).toHaveBeenCalledWith("/admin/users");
+    expect(redirectMock).toHaveBeenCalledWith("/admin/users");
   });
 
   it("throws when Supabase delete returns an error", async () => {

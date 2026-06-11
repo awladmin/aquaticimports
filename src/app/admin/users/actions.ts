@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { randomBytes } from "node:crypto";
 import { createAdminClient } from "@/lib/supabase/server";
 import { requireAdmin } from "@/lib/auth";
@@ -66,6 +67,9 @@ export async function deleteUser(formData: FormData): Promise<void> {
   if (error) throw new Error(error.message);
 
   revalidatePath("/admin/users");
+  // Redirect to clean URL so any stale "User created" / "Password reset"
+  // banner from a previous action disappears.
+  redirect("/admin/users");
 }
 
 export async function updateUserRole(formData: FormData) {

@@ -1,11 +1,16 @@
+import Link from "next/link";
 import { requireAdmin } from "@/lib/auth";
 import { createAdminClient } from "@/lib/supabase/server";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { UserPlus, Trash2, KeyRound } from "lucide-react";
+import { X } from "lucide-react";
 import { createUser, deleteUser, resetUserPassword } from "./actions";
+import {
+  CreateUserSubmit,
+  DeleteUserSubmit,
+  ResetPasswordSubmit,
+} from "./submit-buttons";
 
 type SearchParams = Promise<{
   action?: "created" | "reset";
@@ -57,11 +62,16 @@ export default async function AdminUsersPage({
       </header>
 
       {action && shownEmail && shownPassword && (
-        <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-4 text-sm">
+        <div className="relative rounded-lg border border-emerald-200 bg-emerald-50 p-4 pr-10 text-sm">
+          <Link
+            href="/admin/users"
+            aria-label="Dismiss"
+            className="absolute right-3 top-3 rounded-md p-1 text-emerald-700 hover:bg-emerald-100 hover:text-emerald-900"
+          >
+            <X className="h-4 w-4" />
+          </Link>
           <p className="font-semibold text-emerald-900">
-            {action === "created"
-              ? "User created."
-              : "Password reset."}
+            {action === "created" ? "User created." : "Password reset."}
           </p>
           <p className="mt-1 text-emerald-800">
             {action === "created"
@@ -132,26 +142,11 @@ export default async function AdminUsersPage({
                         <>
                           <form action={handleResetPassword}>
                             <input type="hidden" name="userId" value={u.id} />
-                            <Button
-                              type="submit"
-                              size="sm"
-                              variant="ghost"
-                              className="text-xs"
-                            >
-                              <KeyRound className="mr-1 h-4 w-4" />
-                              Reset password
-                            </Button>
+                            <ResetPasswordSubmit />
                           </form>
                           <form action={deleteUser}>
                             <input type="hidden" name="userId" value={u.id} />
-                            <Button
-                              type="submit"
-                              size="sm"
-                              variant="ghost"
-                              className="text-destructive"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
+                            <DeleteUserSubmit />
                           </form>
                         </>
                       )}
@@ -237,14 +232,7 @@ function CreateUserForm() {
           </select>
         </div>
         <div className="flex items-end">
-          <Button
-            type="submit"
-            variant="brand"
-            className="h-9"
-          >
-            <UserPlus className="mr-1 h-4 w-4" />
-            Create
-          </Button>
+          <CreateUserSubmit />
         </div>
       </div>
     </form>
