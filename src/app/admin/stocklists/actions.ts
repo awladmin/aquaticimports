@@ -6,7 +6,9 @@ import { requireAdmin } from "@/lib/auth";
 
 const BUCKET = "stocklists";
 
-export async function uploadStocklist(formData: FormData) {
+export type UploadResult = { ok: true } | { ok: false; error: string };
+
+export async function uploadStocklist(formData: FormData): Promise<UploadResult> {
   await requireAdmin();
   const supabase = await createClient();
 
