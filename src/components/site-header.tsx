@@ -91,6 +91,7 @@ export async function SiteHeader() {
                 <DropdownMenuSeparator />
                 <form action={logoutAction}>
                   <DropdownMenuItem
+                    nativeButton
                     render={
                       <button
                         type="submit"
