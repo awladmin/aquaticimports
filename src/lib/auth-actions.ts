@@ -1,37 +1,31 @@
 "use server";
 
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import {
-  SESSION_COOKIE,
-  ROLE_COOKIE,
-  type DemoRole,
-} from "./auth";
+import { createClient } from "./supabase/server";
 
 export async function loginAction(formData: FormData) {
-  const username =
-    (formData.get("username") as string | null)?.trim() || "trade-demo";
-  const role = ((formData.get("role") as string | null) ?? "trade") as DemoRole;
-  const store = await cookies();
-  store.set(SESSION_COOKIE, username, {
-    httpOnly: false,
-    sameSite: "lax",
-    path: "/",
-    maxAge: 60 * 60 * 24 * 7,
-  });
-  store.set(ROLE_COOKIE, role, {
-    httpOnly: false,
-    sameSite: "lax",
-    path: "/",
-    maxAge: 60 * 60 * 24 * 7,
-  });
+  const email = (formData.get("username") as string | null)?.trim() ?? "";
+  const password = (formData.get("password") as string | null) ?? "";
   const redirectTo = (formData.get("redirectTo") as string | null) || "/";
+
+  if (!email || !password) {
+    redirect(`/login?error=missing&redirectTo=${encodeURIComponent(redirectTo)}`);
+  }
+
+  const supabase = await createClient();
+  const { error } = await supabase.auth.signInWithPassword({ email, password });
+
+  if (error) {
+    redirect(
+      `/login?error=invalid&redirectTo=${encodeURIComponent(redirectTo)}`,
+    );
+  }
+
   redirect(redirectTo);
 }
 
 export async function logoutAction() {
-  const store = await cookies();
-  store.delete(SESSION_COOKIE);
-  store.delete(ROLE_COOKIE);
+  const supabase = await createClient();
+  await supabase.auth.signOut();
   redirect("/");
 }

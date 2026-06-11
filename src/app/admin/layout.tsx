@@ -30,7 +30,7 @@ export default async function AdminLayout({
 
             <div className="mt-4 rounded-lg bg-muted/60 p-3">
               <p className="text-xs text-muted-foreground">Signed in as</p>
-              <p className="text-sm font-medium">{session.username}</p>
+              <p className="text-sm font-medium">{session.displayName ?? session.email}</p>
               <div className="mt-3 flex gap-2">
                 <Button
                   asChild

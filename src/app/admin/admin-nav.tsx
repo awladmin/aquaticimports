@@ -3,10 +3,11 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { FolderOpen } from "lucide-react";
+import { FolderOpen, Users } from "lucide-react";
 
 const ITEMS = [
   { href: "/admin/stocklists", label: "Stocklists", icon: FolderOpen },
+  { href: "/admin/users", label: "Users", icon: Users },
 ];
 
 export function AdminNav() {

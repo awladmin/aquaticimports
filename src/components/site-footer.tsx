@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { BrandLogo } from "./brand-logo";
 import { MapPin, Phone, Mail } from "lucide-react";
@@ -16,20 +17,50 @@ export function SiteFooter() {
 
         <div>
           <h4 className="mb-3 text-sm font-semibold tracking-tight text-white">
-            Site links
+            Our location
           </h4>
-          <ul className="space-y-2 text-sm">
-            <FooterLink href="/">Home</FooterLink>
-            <FooterLink href="/contact">Contact us</FooterLink>
-            <FooterLink href="/privacy">Privacy policy</FooterLink>
-          </ul>
+          <a
+            href="https://www.google.com/maps/place/51%C2%B028'22.2%22N+0%C2%B030'53.3%22W/@51.4728392,-0.5148013,17z"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block overflow-hidden rounded-lg ring-1 ring-white/15 transition-opacity hover:opacity-90"
+          >
+            <Image
+              src="/footer-map.png"
+              alt="Map showing Aquatic Imports at Colnbrook, just west of Heathrow Airport"
+              width={1254}
+              height={1254}
+              sizes="(min-width: 1024px) 220px, (min-width: 640px) 50vw, 100vw"
+              className="block h-auto w-full"
+            />
+          </a>
+          <p className="mt-2 text-xs text-white/70">
+            Two miles west of Heathrow.
+          </p>
         </div>
 
         <div>
           <h4 className="mb-3 text-sm font-semibold tracking-tight text-white">
-            Our address
+            Contact details
           </h4>
-          <address className="space-y-1.5 text-sm not-italic text-white/80">
+          <address className="space-y-4 text-sm not-italic text-white/80">
+            <ul className="space-y-2">
+              <li className="flex items-center gap-2">
+                <Phone className="h-4 w-4 text-white/90" />
+                <a href="tel:+441753687050" className="hover:text-white">
+                  +44 (0)1753 687050
+                </a>
+              </li>
+              <li className="flex items-center gap-2">
+                <Mail className="h-4 w-4 text-white/90" />
+                <a
+                  href="mailto:info@aquaticimports.com"
+                  className="hover:text-white"
+                >
+                  info@aquaticimports.com
+                </a>
+              </li>
+            </ul>
             <div className="flex items-start gap-2">
               <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-white/90" />
               <div>
@@ -49,24 +80,12 @@ export function SiteFooter() {
 
         <div>
           <h4 className="mb-3 text-sm font-semibold tracking-tight text-white">
-            Email &amp; phone
+            Site links
           </h4>
-          <ul className="space-y-2 text-sm text-white/80">
-            <li className="flex items-center gap-2">
-              <Phone className="h-4 w-4 text-white/90" />
-              <a href="tel:+441753687050" className="hover:text-white">
-                +44 (0)1753 687050
-              </a>
-            </li>
-            <li className="flex items-center gap-2">
-              <Mail className="h-4 w-4 text-white/90" />
-              <a
-                href="mailto:info@aquaticimports.com"
-                className="hover:text-white"
-              >
-                info@aquaticimports.com
-              </a>
-            </li>
+          <ul className="space-y-2 text-sm">
+            <FooterLink href="/">Home</FooterLink>
+            <FooterLink href="/contact">Contact us</FooterLink>
+            <FooterLink href="/privacy">Privacy policy</FooterLink>
           </ul>
         </div>
       </div>
@@ -74,8 +93,7 @@ export function SiteFooter() {
       <div className="border-t border-white/15">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-2 px-4 py-5 text-xs text-white/70 sm:flex-row sm:px-6 lg:px-8">
           <p>
-            © {new Date().getFullYear()} Independent Aquatic Imports Ltd.
-            Company Reg. 381 4274. All prices E&amp;OE.
+            {`© ${new Date().getFullYear()} Independent Aquatic Imports Ltd. Company Reg. 381 4274. All prices E&OE.`}
           </p>
           <p>
             Prices subject to our standard terms &amp; conditions. A copy can

@@ -50,8 +50,8 @@ export function ContactForm() {
       </div>
       <Button
         type="submit"
+        variant="brand"
         disabled={submitting}
-        className="bg-brand-500 text-white hover:bg-brand-600"
       >
         <Send className="mr-1.5 h-4 w-4" />
         {submitting ? "Sending…" : "Send your message"}

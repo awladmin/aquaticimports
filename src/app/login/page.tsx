@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { loginAction } from "@/lib/auth-actions";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -12,19 +11,25 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { BrandLogo } from "@/components/brand-logo";
-import { ShieldCheck } from "lucide-react";
 import type { Metadata } from "next";
+import { SignInButton } from "./sign-in-button";
 
 export const metadata: Metadata = {
   title: "Trade login",
 };
 
+const ERROR_MESSAGES: Record<string, string> = {
+  missing: "Please enter both your email and password.",
+  invalid: "Those credentials weren't recognised. Try again, or get in touch if you've forgotten your password.",
+};
+
 export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ redirectTo?: string }>;
+  searchParams: Promise<{ redirectTo?: string; error?: string }>;
 }) {
-  const { redirectTo } = await searchParams;
+  const { redirectTo, error } = await searchParams;
+  const errorMessage = error ? ERROR_MESSAGES[error] : null;
 
   return (
     <div className="mx-auto flex max-w-5xl items-center justify-center px-4 py-12 sm:px-6 lg:px-8 lg:py-20">
@@ -47,13 +52,19 @@ export default async function LoginPage({
                 name="redirectTo"
                 value={redirectTo ?? "/"}
               />
+              {errorMessage && (
+                <div className="rounded-md border border-destructive/30 bg-destructive/5 px-3 py-2 text-sm text-destructive">
+                  {errorMessage}
+                </div>
+              )}
               <div className="space-y-2">
-                <Label htmlFor="username">Username or email</Label>
+                <Label htmlFor="username">Email</Label>
                 <Input
                   id="username"
                   name="username"
+                  type="email"
                   placeholder="you@yourshop.co.uk"
-                  defaultValue="trade-demo"
+                  autoComplete="email"
                   required
                 />
               </div>
@@ -64,25 +75,22 @@ export default async function LoginPage({
                   name="password"
                   type="password"
                   placeholder="••••••••"
-                  defaultValue="demo"
+                  autoComplete="current-password"
                   required
                 />
               </div>
-              <input type="hidden" name="role" value="trade" />
             </CardContent>
-            <CardFooter className="flex flex-col gap-3 pt-2">
-              <Button
-                type="submit"
-                className="w-full bg-brand-500 text-white hover:bg-brand-600"
-              >
-                <ShieldCheck className="mr-1.5 h-4 w-4" />
-                Sign in
-              </Button>
+            <CardFooter className="flex flex-col gap-3 border-t-0 bg-transparent pt-6">
+              <SignInButton />
               <p className="text-center text-xs text-muted-foreground">
                 Forgotten your password?{" "}
-                <Link href="/contact" className="underline hover:text-foreground">
-                  Contact us
-                </Link>
+                <Link
+                  href="/contact"
+                  className="underline hover:text-foreground"
+                >
+                  Get in touch
+                </Link>{" "}
+                and we&apos;ll reset it for you.
               </p>
             </CardFooter>
           </form>

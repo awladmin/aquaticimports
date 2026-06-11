@@ -1,19 +1,33 @@
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { createClient } from "./supabase/server";
 
-export const SESSION_COOKIE = "ai_demo_session";
-export const ROLE_COOKIE = "ai_demo_role";
+export type Role = "admin" | "trade";
 
-export type DemoRole = "trade" | "admin";
+export type Session = {
+  userId: string;
+  email: string;
+  role: Role;
+  displayName: string | null;
+};
 
-export async function getSession() {
-  const store = await cookies();
-  const session = store.get(SESSION_COOKIE)?.value;
-  const role = store.get(ROLE_COOKIE)?.value as DemoRole | undefined;
-  if (!session) return null;
+export async function getSession(): Promise<Session | null> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return null;
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role, display_name")
+    .eq("id", user.id)
+    .single();
+
   return {
-    username: session,
-    role: role ?? "trade",
+    userId: user.id,
+    email: user.email ?? "",
+    role: (profile?.role as Role) ?? "trade",
+    displayName: profile?.display_name ?? null,
   };
 }
 

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { ContactForm } from "./contact-form";
 import { Card, CardContent } from "@/components/ui/card";
 import { MapPin, Phone, Mail, Clock } from "lucide-react";
@@ -9,19 +10,36 @@ export const metadata: Metadata = {
 
 export default function ContactPage() {
   return (
-    <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
-      <div className="mx-auto max-w-2xl text-center">
-        <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-          Get in touch
-        </h1>
-        <p className="mt-3 text-muted-foreground">
-          Questions about your account, a supplier, or applying for trade?
-          Leave your details and we&apos;ll come back to you within one working
-          day.
-        </p>
-      </div>
+    <>
+      <section className="relative overflow-hidden">
+        <div className="pointer-events-none absolute inset-0 -z-10">
+          <Image
+            src="/hero-4.jpg"
+            alt="Spotted koi swimming in clear water"
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-background/30 via-background/20 to-background" />
+          <div className="absolute inset-0 bg-gradient-to-r from-background/25 via-transparent to-background/25" />
+        </div>
+        <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-20 lg:px-8">
+          <div className="mx-auto max-w-2xl text-center">
+            <h1 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl md:text-5xl">
+              Get in touch
+            </h1>
+            <p className="mt-3 text-base font-medium text-foreground/90 drop-shadow-[0_1px_0_rgba(255,255,255,0.9)] sm:text-lg">
+              Questions about your account, applying for trade, or anything
+              else? Leave your details and we&apos;ll come back to you within
+              one working day.
+            </p>
+          </div>
+        </div>
+      </section>
 
-      <div className="mx-auto mt-10 grid max-w-5xl gap-6 lg:grid-cols-5">
+      <div className="mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8">
+        <div className="mx-auto -mt-8 grid max-w-5xl gap-6 lg:grid-cols-5">
         <Card className="border-border/70 lg:col-span-3">
           <CardContent className="p-6 sm:p-8">
             <ContactForm />
@@ -68,28 +86,10 @@ export default function ContactPage() {
             </CardContent>
           </Card>
 
-          <Card className="overflow-hidden border-border/70">
-            <div
-              className="aspect-[4/3] w-full bg-gradient-to-br from-brand-200 via-brand-100 to-background"
-              style={{
-                backgroundImage:
-                  "repeating-linear-gradient(45deg, rgba(115,201,180,0.08) 0 10px, transparent 10px 20px)",
-              }}
-            >
-              <div className="flex h-full items-center justify-center">
-                <div className="rounded-lg bg-background/80 px-4 py-3 text-center shadow-sm backdrop-blur">
-                  <MapPin className="mx-auto h-5 w-5 text-brand-600" />
-                  <p className="mt-1 text-sm font-medium">Colnbrook, Slough</p>
-                  <p className="text-xs text-muted-foreground">
-                    10 mins from Heathrow (LHR)
-                  </p>
-                </div>
-              </div>
-            </div>
-          </Card>
+        </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 

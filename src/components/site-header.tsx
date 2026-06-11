@@ -29,7 +29,7 @@ export async function SiteHeader() {
   const nav = visibleNav(isLoggedIn);
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-border/60 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/70">
+    <header className="sticky top-0 z-40 w-full border-b border-border/60 bg-background">
       <div className="mx-auto flex h-[72px] max-w-7xl items-center gap-6 px-4 sm:px-6 lg:px-8">
         <Link href="/" className="flex shrink-0 items-center gap-2">
           <BrandLogo />
@@ -61,14 +61,14 @@ export async function SiteHeader() {
                   <User className="h-3.5 w-3.5" />
                 </span>
                 <span className="hidden text-sm font-medium sm:inline">
-                  {session?.username}
+                  {session?.displayName ?? session?.email}
                 </span>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuLabel>
                   <div className="flex flex-col gap-0.5">
                     <span className="text-sm font-medium">
-                      {session?.username}
+                      {session?.displayName ?? session?.email}
                     </span>
                     <span className="text-xs font-normal text-muted-foreground capitalize">
                       {session?.role === "admin"
@@ -88,14 +88,6 @@ export async function SiteHeader() {
                     }
                   />
                 )}
-                <DropdownMenuItem
-                  render={
-                    <Link href="/account">
-                      <User className="mr-2 h-4 w-4" />
-                      My account
-                    </Link>
-                  }
-                />
                 <DropdownMenuSeparator />
                 <form action={logoutAction}>
                   <DropdownMenuItem
@@ -155,7 +147,7 @@ export async function SiteHeader() {
                 {!isLoggedIn && (
                   <NavLink
                     href="/login"
-                    className="mt-2 rounded-md bg-brand-500 px-3 py-2.5 text-sm font-medium text-white hover:bg-brand-600"
+                    className="mt-2 rounded-md bg-gradient-to-b from-brand-400 to-brand-600 px-3 py-2.5 text-sm font-medium text-white transition-colors hover:from-brand-500 hover:to-brand-700"
                   >
                     Trade login →
                   </NavLink>

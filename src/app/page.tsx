@@ -1,6 +1,6 @@
-import Image from "next/image";
 import Link from "next/link";
 import { getSession } from "@/lib/auth";
+import { HeroCarousel, type HeroSlide } from "@/components/hero-carousel";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { BrandLogo } from "@/components/brand-logo";
@@ -14,6 +14,16 @@ import {
   Handshake,
 } from "lucide-react";
 
+// Rotation alternates: BA plane (lead) → yellow tang reef → Aquatic Imports
+// plane → koi. Plane-then-fish pattern shows arrival followed by what's
+// being imported.
+const HERO_SLIDES: HeroSlide[] = [
+  { src: "/hero-2.jpg", alt: "British Airways aircraft at Heathrow" },
+  { src: "/hero-3.png", alt: "Yellow tang and clownfish on a bright sunlit reef" },
+  { src: "/hero.jpg", alt: "Aquatic Imports cargo aircraft at Heathrow" },
+  { src: "/hero-4.png", alt: "Orange and white koi in shallow sunlit water" },
+];
+
 export default async function HomePage() {
   const session = await getSession();
   const isLoggedIn = !!session;
@@ -22,16 +32,9 @@ export default async function HomePage() {
     <>
       <section className="relative overflow-hidden">
         <div className="pointer-events-none absolute inset-0 -z-10">
-          <Image
-            src="/hero.jpg"
-            alt="Cargo aircraft at London Heathrow"
-            fill
-            priority
-            sizes="100vw"
-            className="object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-background/25 via-background/15 to-background" />
-          <div className="absolute inset-0 bg-gradient-to-r from-background/25 via-transparent to-background/25" />
+          <HeroCarousel slides={HERO_SLIDES} />
+          <div className="absolute inset-0 bg-gradient-to-b from-background/15 via-background/5 to-background" />
+          <div className="absolute inset-0 bg-gradient-to-r from-background/15 via-transparent to-background/15" />
         </div>
 
         <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-14 lg:px-8 lg:py-16">
@@ -50,7 +53,7 @@ export default async function HomePage() {
               {isLoggedIn ? (
                 <Link
                   href="/stocklists"
-                  className="inline-flex h-11 items-center justify-center gap-1 rounded-lg bg-brand-500 px-5 text-sm font-medium text-white shadow-sm hover:bg-brand-600"
+                  className="inline-flex h-11 items-center justify-center gap-1 rounded-lg bg-gradient-to-b from-brand-400 to-brand-600 px-5 text-sm font-medium text-white transition-colors hover:from-brand-500 hover:to-brand-700"
                 >
                   Open Stocklists
                   <ArrowRight className="ml-1 h-4 w-4" />
@@ -59,7 +62,7 @@ export default async function HomePage() {
                 <>
                   <Link
                     href="/login"
-                    className="inline-flex h-11 items-center justify-center gap-1 rounded-lg bg-brand-500 px-5 text-sm font-medium text-white shadow-sm hover:bg-brand-600"
+                    className="inline-flex h-11 items-center justify-center gap-1 rounded-lg bg-gradient-to-b from-brand-400 to-brand-600 px-5 text-sm font-medium text-white transition-colors hover:from-brand-500 hover:to-brand-700"
                   >
                     Trade login
                     <ArrowRight className="ml-1 h-4 w-4" />
@@ -160,7 +163,7 @@ function AboutSection() {
             are looking for, we are confident we can find it for you.
           </p>
           <p className="pt-2 text-sm font-semibold tracking-tight text-brand-700">
-            — The Independent Aquatic Imports Team
+            The Independent Aquatic Imports Team
           </p>
         </div>
       </div>
@@ -246,10 +249,7 @@ function PublicPanels({ isLoggedIn }: { isLoggedIn: boolean }) {
               </p>
             </div>
             <div className="flex gap-3">
-              <Button
-                asChild
-                className="bg-brand-500 text-white hover:bg-brand-600"
-              >
+              <Button asChild variant="brand">
                 <Link href="/login">Log in</Link>
               </Button>
               <Button asChild variant="outline">
