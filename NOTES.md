@@ -1,5 +1,87 @@
 # Aquatic Imports — Project Notes
 
+## Status — 2026-06-11
+
+**Build is functionally complete. Live preview at https://aquaticimports.vercel.app.
+Waiting on Rob's review and four decisions before launch.**
+
+### What's built and live
+
+- Public site: home (4-slide hero carousel — BA plane, tang/clownfish reef,
+  branded plane, koi), contact page with koi hero banner, privacy policy
+  (real GDPR content), terms and conditions, footer with illustrated
+  Heathrow proximity map (linked to Google Maps for directions).
+- Auth: Supabase Auth via `@supabase/ssr`, server-side session checks
+  on every protected route (`requireSession` / `requireAdmin`), session
+  refresh via `src/proxy.ts` (Next.js 16 renamed middleware to proxy).
+- Customer area: `/stocklists` lists files with This week / Last week /
+  Older / All tabs and a filename search. Download links go through
+  `/api/stocklists/[filename]` proxy on our own domain (Supabase URL
+  not visible to customers).
+- Admin area: `/admin/stocklists` has drag-and-drop upload, multi-select
+  bulk delete with indeterminate header checkbox, same tabs/search.
+  `/admin/users` lets admins create accounts (auto-generated 12-char
+  password shown once), reset any user's password, delete users.
+  Self-protection on own row (can't delete or reset yourself).
+- Migrations: `supabase/migrations/*.sql` applied via `scripts/migrate.mjs`
+  (uses `pg` + Supabase session pooler).
+- Tests: 76 passing across 9 Vitest files covering auth helpers, server
+  actions (stocklists + users), the download proxy route, the stocklist
+  filter logic, the customer file list component, and both legal pages.
+- CI: `.github/workflows/ci.yml` runs lint + typecheck + test on every
+  push to main. Build runs on Vercel.
+- Premium gradient buttons, cookie banner built but toggled off until
+  analytics are added.
+
+### Rob's accounts and credentials
+
+- Rob's admin account is provisioned on `robert@aquaticimports.com`.
+  Credentials emailed to him 2026-06-11 (subject "Your Aquatic Imports
+  admin login"). He can create Annie's account himself from `/admin/users`.
+- Dan's local test admin: `dan@alltrouser.digital` / `jB0RFSvl76wq`.
+- Supabase project owned by `aquatics@amershamwebsites.co.uk` (agency).
+  Single project for dev + prod (agreed not to split until just before
+  launch).
+
+### Waiting on Rob — four decisions
+
+Draft email covering all four is in `~/.claude/cache/email-pending.json`
+state until next session OR not yet sent (only the credentials email
+went out today). The progress-update email asks Rob about:
+
+1. **Contact form** — wire it up to send to him (needs DNS / DKIM on
+   aquaticimports.com via IONOS) or drop the form and show only phone +
+   email + address?
+2. **Logo** — current Vectorizer.AI trace good enough for web, or get a
+   designer-redrawn version for print/large-format?
+3. **Hero banners** — keep the four current ones, or swap any?
+4. **Copy / content** — anything to tweak after he clicks around the
+   staging URL?
+
+If Rob doesn't reply in a week, default to: contact form OFF, logo
+as-is, hero banners as-is.
+
+### Still to do once Rob's responded
+
+- `/account` page so any logged-in user (including Rob and Annie) can
+  change their own password without going through admin. ~15 min build.
+- If Rob wants the contact form: configure custom SMTP (Resend/Postmark)
+  and DKIM/SPF DNS records on aquaticimports.com via IONOS.
+- Production Supabase project split just before DNS cutover at
+  aquaticimports.com (we currently share one project across dev + prod).
+- DNS cutover from IONOS WordPress site to Vercel deployment.
+
+### Local dev rules (don't skip — they cost us deploys today)
+
+- `npm run verify` before any `git push` (lint + typecheck + test).
+- `npm run build` for full local Next.js compile, catches strict type
+  errors that `tsc --noEmit` misses (Vercel uses these strict checks).
+- Never use em dashes in code, copy, comments, or chat — project rule.
+- For email sends: delete `~/.claude/cache/email-pending.json` before
+  writing the new payload; never reuse stale cache.
+
+---
+
 ## Status — 2026-05-26
 
 **Rob has reviewed the POC and is on board, with a much slimmer scope.**
