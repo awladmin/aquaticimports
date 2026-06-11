@@ -10,7 +10,9 @@ export type CreateUserResult =
   | { ok: false; error: string };
 
 function generatePassword() {
-  return randomBytes(9).toString("base64").replace(/[+/=]/g, "").slice(0, 12);
+  // 12 random bytes → 16 base64 chars; URL-safe alphabet has no +/= to filter,
+  // so the slice always lands on exactly 12 characters.
+  return randomBytes(12).toString("base64url").slice(0, 12);
 }
 
 export async function createUser(formData: FormData): Promise<CreateUserResult> {
