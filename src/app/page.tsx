@@ -78,11 +78,10 @@ export default async function HomePage() {
             </div>
           </div>
 
-          <div className="mx-auto mt-12 grid max-w-5xl grid-cols-2 gap-4 sm:grid-cols-4">
+          <div className="mx-auto mt-12 grid max-w-3xl grid-cols-3 gap-4">
             <Stat value="1999" label="Established" />
             <Stat value="100%" label="Trade only" />
             <Stat value="20+" label="Source countries" />
-            <Stat value="5" label="Delivery days / week" />
           </div>
         </div>
       </section>

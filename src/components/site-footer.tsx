@@ -34,9 +34,6 @@ export function SiteFooter() {
               className="block h-auto w-full"
             />
           </a>
-          <p className="mt-2 text-xs text-white/70">
-            Two miles west of Heathrow.
-          </p>
         </div>
 
         <div>
