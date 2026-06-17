@@ -31,13 +31,22 @@ export function UploadZone() {
       for (let i = 0; i < list.length; i++) {
         const f = list[i];
         setProgress({ current: i + 1, total: list.length });
-        const { error } = await supabase.storage
-          .from(BUCKET)
-          .upload(f.name, f, {
-            upsert: true,
-            contentType: f.type || undefined,
-          });
-        if (error) newErrors.push({ name: f.name, error: error.message });
+        try {
+          const { error } = await supabase.storage
+            .from(BUCKET)
+            .upload(f.name, f, {
+              upsert: true,
+              contentType: f.type || undefined,
+            });
+          if (error) {
+            console.error(`Upload failed for ${f.name}:`, error);
+            newErrors.push({ name: f.name, error: error.message });
+          }
+        } catch (e) {
+          console.error(`Upload threw for ${f.name}:`, e);
+          const msg = e instanceof Error ? e.message : String(e);
+          newErrors.push({ name: f.name, error: msg || "Upload failed" });
+        }
       }
       setErrors(newErrors);
       if (newErrors.length === 0) {

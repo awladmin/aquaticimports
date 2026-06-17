@@ -150,9 +150,7 @@ export function StocklistFileTable({ files }: { files: StocklistFile[] }) {
                       {formatBytes(f.size)}
                     </td>
                     <td className="px-4 py-3 text-muted-foreground">
-                      {f.updatedAt
-                        ? new Date(f.updatedAt).toLocaleString("en-GB")
-                        : "-"}
+                      <FormattedDate iso={f.updatedAt} />
                     </td>
                   </tr>
                 ))}
@@ -186,6 +184,15 @@ export function StocklistFileTable({ files }: { files: StocklistFile[] }) {
         </div>
       )}
     </>
+  );
+}
+
+function FormattedDate({ iso }: { iso: string | null | undefined }) {
+  if (!iso) return <>-</>;
+  return (
+    <span suppressHydrationWarning>
+      {new Date(iso).toLocaleString("en-GB")}
+    </span>
   );
 }
 
