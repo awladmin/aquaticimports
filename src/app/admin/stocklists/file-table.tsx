@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Search, Trash2 } from "lucide-react";
+import { useFormStatus } from "react-dom";
+import { Loader2, Search, Trash2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -163,15 +164,7 @@ export function StocklistFileTable({ files }: { files: StocklistFile[] }) {
                 {selectedCount} selected
               </p>
             )}
-            <Button
-              type="submit"
-              variant="outline"
-              disabled={selectedCount === 0}
-              className="text-destructive"
-            >
-              <Trash2 className="mr-1 h-4 w-4" />
-              Delete selected
-            </Button>
+            <DeleteSubmit disabled={selectedCount === 0} />
           </div>
         </form>
       ) : (
@@ -184,6 +177,25 @@ export function StocklistFileTable({ files }: { files: StocklistFile[] }) {
         </div>
       )}
     </>
+  );
+}
+
+function DeleteSubmit({ disabled }: { disabled: boolean }) {
+  const { pending } = useFormStatus();
+  return (
+    <Button
+      type="submit"
+      variant="outline"
+      disabled={disabled || pending}
+      className="text-destructive"
+    >
+      {pending ? (
+        <Loader2 className="mr-1 h-4 w-4 animate-spin" />
+      ) : (
+        <Trash2 className="mr-1 h-4 w-4" />
+      )}
+      {pending ? "Deleting..." : "Delete selected"}
+    </Button>
   );
 }
 
