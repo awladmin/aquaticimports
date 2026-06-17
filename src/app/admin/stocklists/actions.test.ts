@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { deleteStocklists, uploadStocklist } from "./actions";
+import { deleteStocklists } from "./actions";
 
 const requireAdminMock = vi.hoisted(() => vi.fn());
 const createClientMock = vi.hoisted(() => vi.fn());
@@ -18,15 +18,11 @@ vi.mock("next/cache", () => ({
 }));
 
 function storageDouble(opts: {
-  uploadError?: { message: string } | null;
   removeError?: { message: string } | null;
 }) {
   return {
     storage: {
       from: vi.fn().mockReturnValue({
-        upload: vi
-          .fn()
-          .mockResolvedValue({ error: opts.uploadError ?? null }),
         remove: vi
           .fn()
           .mockResolvedValue({ error: opts.removeError ?? null }),
@@ -44,58 +40,6 @@ beforeEach(() => {
     email: "rob@x.com",
     role: "admin",
     displayName: "Rob",
-  });
-});
-
-describe("uploadStocklist", () => {
-  it("rejects when no file is on the form", async () => {
-    createClientMock.mockResolvedValue(storageDouble({}));
-    const fd = new FormData();
-    const result = await uploadStocklist(fd);
-    expect(result.ok).toBe(false);
-    if (!result.ok) expect(result.error).toMatch(/no file/i);
-  });
-
-  it("rejects when file is empty", async () => {
-    createClientMock.mockResolvedValue(storageDouble({}));
-    const fd = new FormData();
-    fd.set("file", new File([], "empty.xlsx"));
-    const result = await uploadStocklist(fd);
-    expect(result.ok).toBe(false);
-  });
-
-  it("returns ok and revalidates both paths on success", async () => {
-    createClientMock.mockResolvedValue(storageDouble({}));
-    const fd = new FormData();
-    fd.set(
-      "file",
-      new File(["dummy contents"], "Cebu 09.06.26 MH.xlsx", {
-        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-      }),
-    );
-    const result = await uploadStocklist(fd);
-    expect(result.ok).toBe(true);
-    expect(revalidatePathMock).toHaveBeenCalledWith("/admin/stocklists");
-    expect(revalidatePathMock).toHaveBeenCalledWith("/stocklists");
-  });
-
-  it("surfaces upload errors from Supabase", async () => {
-    createClientMock.mockResolvedValue(
-      storageDouble({ uploadError: { message: "quota exceeded" } }),
-    );
-    const fd = new FormData();
-    fd.set("file", new File(["data"], "x.xlsx"));
-    const result = await uploadStocklist(fd);
-    expect(result.ok).toBe(false);
-    if (!result.ok) expect(result.error).toBe("quota exceeded");
-  });
-
-  it("checks admin auth before doing anything", async () => {
-    requireAdminMock.mockRejectedValue(new Error("REDIRECT:/login"));
-    const fd = new FormData();
-    fd.set("file", new File(["data"], "x.xlsx"));
-    await expect(uploadStocklist(fd)).rejects.toThrow("REDIRECT:/login");
-    expect(createClientMock).not.toHaveBeenCalled();
   });
 });
 

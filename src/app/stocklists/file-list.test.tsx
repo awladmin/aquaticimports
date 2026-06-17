@@ -4,9 +4,10 @@ import userEvent from "@testing-library/user-event";
 import { StocklistFileList } from "./file-list";
 
 const ONE_DAY_MS = 24 * 60 * 60 * 1000;
+const NOW = new Date("2026-06-12T12:00:00Z").getTime();
 
 function isoDaysAgo(days: number) {
-  return new Date(Date.now() - days * ONE_DAY_MS).toISOString();
+  return new Date(NOW - days * ONE_DAY_MS).toISOString();
 }
 
 const FILES = [
@@ -40,9 +41,7 @@ describe("<StocklistFileList />", () => {
   beforeEach(() => {
     // Mock Date.now() rather than vi.useFakeTimers() — userEvent depends on
     // real timers, so faking them breaks click/type interactions.
-    vi.spyOn(Date, "now").mockReturnValue(
-      new Date("2026-06-12T12:00:00Z").getTime(),
-    );
+    vi.spyOn(Date, "now").mockReturnValue(NOW);
   });
 
   afterEach(() => {

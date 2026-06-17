@@ -5,13 +5,19 @@ import { useRouter } from "next/navigation";
 import { Upload, UploadCloud } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { uploadStocklist } from "./actions";
+import { createClient } from "@/lib/supabase/client";
+
+const BUCKET = "stocklists";
+
+type UploadProgress = { current: number; total: number };
 
 export function UploadZone() {
+  const [supabase] = useState(() => createClient());
   const [files, setFiles] = useState<File[]>([]);
   const [dragActive, setDragActive] = useState(false);
   const [pending, startTransition] = useTransition();
   const [errors, setErrors] = useState<{ name: string; error: string }[]>([]);
+  const [progress, setProgress] = useState<UploadProgress | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
@@ -19,30 +25,30 @@ export function UploadZone() {
     const list = selected.length > 0 ? selected : files;
     if (list.length === 0) return;
     setErrors([]);
+    setProgress({ current: 0, total: list.length });
     startTransition(async () => {
-      const results = await Promise.all(
-        list.map(async (f) => {
-          const fd = new FormData();
-          fd.set("file", f);
-          const result = await uploadStocklist(fd);
-          return { file: f, result };
-        }),
-      );
-      const failed = results
-        .filter((r) => !r.result.ok)
-        .map((r) => ({
-          name: r.file.name,
-          error: r.result.ok ? "" : r.result.error,
-        }));
-      setErrors(failed);
-      if (failed.length === 0) {
+      const newErrors: { name: string; error: string }[] = [];
+      for (let i = 0; i < list.length; i++) {
+        const f = list[i];
+        setProgress({ current: i + 1, total: list.length });
+        const { error } = await supabase.storage
+          .from(BUCKET)
+          .upload(f.name, f, {
+            upsert: true,
+            contentType: f.type || undefined,
+          });
+        if (error) newErrors.push({ name: f.name, error: error.message });
+      }
+      setErrors(newErrors);
+      if (newErrors.length === 0) {
         setFiles([]);
         if (inputRef.current) inputRef.current.value = "";
       } else {
         setFiles(
-          list.filter((f) => failed.some((x) => x.name === f.name)),
+          list.filter((f) => newErrors.some((x) => x.name === f.name)),
         );
       }
+      setProgress(null);
       router.refresh();
     });
   };
@@ -127,8 +133,8 @@ export function UploadZone() {
           disabled={files.length === 0 || pending}
         >
           <Upload className="mr-1 h-4 w-4" />
-          {pending
-            ? `Uploading ${files.length} ${fileWord(files.length)}…`
+          {pending && progress
+            ? `Uploading ${progress.current} of ${progress.total}…`
             : `Upload${files.length > 1 ? ` ${files.length} files` : ""}`}
         </Button>
       </div>
