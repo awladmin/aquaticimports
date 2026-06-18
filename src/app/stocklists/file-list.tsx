@@ -9,6 +9,7 @@ import {
   BUCKET_LABELS,
   type StocklistBucket,
 } from "@/lib/stocklist-filters";
+import { alphabeticalOrder } from "@/lib/stocklist-sort";
 
 type StocklistFile = {
   name: string;
@@ -18,27 +19,34 @@ type StocklistFile = {
 };
 
 type Tab = StocklistBucket | "all";
+type SortMode = "custom" | "alpha";
 
 const TABS: Tab[] = ["this-week", "last-week", "older", "all"];
 
 export function StocklistFileList({ files }: { files: StocklistFile[] }) {
   const [tab, setTab] = useState<Tab>("this-week");
   const [query, setQuery] = useState("");
+  const [sortMode, setSortMode] = useState<SortMode>("custom");
+
+  const sorted = useMemo(
+    () => (sortMode === "alpha" ? alphabeticalOrder(files) : files),
+    [files, sortMode],
+  );
 
   const counts = useMemo(() => {
-    const c = { "this-week": 0, "last-week": 0, "older": 0, all: files.length };
-    for (const f of files) c[bucketFor(f.updatedAt)]++;
+    const c = { "this-week": 0, "last-week": 0, "older": 0, all: sorted.length };
+    for (const f of sorted) c[bucketFor(f.updatedAt)]++;
     return c;
-  }, [files]);
+  }, [sorted]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return files.filter((f) => {
+    return sorted.filter((f) => {
       if (tab !== "all" && bucketFor(f.updatedAt) !== tab) return false;
       if (q && !f.name.toLowerCase().includes(q)) return false;
       return true;
     });
-  }, [files, tab, query]);
+  }, [sorted, tab, query]);
 
   return (
     <>
@@ -63,15 +71,28 @@ export function StocklistFileList({ files }: { files: StocklistFile[] }) {
             </button>
           ))}
         </div>
-        <div className="relative max-w-xs">
-          <Search className="pointer-events-none absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input
-            type="search"
-            placeholder="Search filenames"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            className="pl-8"
-          />
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+          <label className="flex items-center gap-2 text-sm">
+            <span className="text-muted-foreground">Sort:</span>
+            <select
+              value={sortMode}
+              onChange={(e) => setSortMode(e.target.value as SortMode)}
+              className="h-8 rounded-md border border-input bg-background px-2 text-sm"
+            >
+              <option value="custom">Custom order</option>
+              <option value="alpha">A to Z</option>
+            </select>
+          </label>
+          <div className="relative max-w-xs">
+            <Search className="pointer-events-none absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              type="search"
+              placeholder="Search filenames"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              className="pl-8"
+            />
+          </div>
         </div>
       </div>
 
