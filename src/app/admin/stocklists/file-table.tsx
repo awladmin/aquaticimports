@@ -49,6 +49,12 @@ type StocklistFile = {
 type Tab = StocklistBucket | "all";
 type SortMode = "custom" | "alpha" | "recent";
 
+const SORT_LABELS: Record<SortMode, string> = {
+  custom: "Suggested",
+  alpha: "A to Z",
+  recent: "Most recent",
+};
+
 const TABS: Tab[] = ["this-week", "last-week", "older", "all"];
 
 export function StocklistFileTable({ files }: { files: StocklistFile[] }) {
@@ -181,12 +187,12 @@ export function StocklistFileTable({ files }: { files: StocklistFile[] }) {
               onValueChange={(v) => setSortMode(v as SortMode)}
             >
               <SelectTrigger size="sm" className="w-[150px]">
-                <SelectValue />
+                <SelectValue>{SORT_LABELS[sortMode]}</SelectValue>
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="custom">Suggested</SelectItem>
-                <SelectItem value="alpha">A to Z</SelectItem>
-                <SelectItem value="recent">Most recent</SelectItem>
+                <SelectItem value="custom">{SORT_LABELS.custom}</SelectItem>
+                <SelectItem value="alpha">{SORT_LABELS.alpha}</SelectItem>
+                <SelectItem value="recent">{SORT_LABELS.recent}</SelectItem>
               </SelectContent>
             </Select>
           </div>
