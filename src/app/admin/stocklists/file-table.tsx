@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { GripVertical, Loader2, Search, Trash2 } from "lucide-react";
 import {
@@ -22,6 +22,14 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import {
   bucketFor,
@@ -53,7 +61,6 @@ export function StocklistFileTable({ files }: { files: StocklistFile[] }) {
   );
   const [reorderError, setReorderError] = useState<string | null>(null);
   const [reordering, setReordering] = useState(false);
-  const headerCheckboxRef = useRef<HTMLInputElement>(null);
 
   // Use the optimistic order only while it still matches the file set in
   // props (same ids, just rearranged). If props grow, shrink, or otherwise
@@ -99,12 +106,6 @@ export function StocklistFileTable({ files }: { files: StocklistFile[] }) {
     filtered.length > 0 && filtered.every((f) => selected.has(f.name));
   const someSelected = filtered.some((f) => selected.has(f.name));
   const selectedCount = filtered.filter((f) => selected.has(f.name)).length;
-
-  useEffect(() => {
-    if (headerCheckboxRef.current) {
-      headerCheckboxRef.current.indeterminate = someSelected && !allSelected;
-    }
-  }, [someSelected, allSelected]);
 
   const toggleAll = () => {
     setSelected((prev) => {
@@ -173,18 +174,22 @@ export function StocklistFileTable({ files }: { files: StocklistFile[] }) {
           ))}
         </div>
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-          <label className="flex items-center gap-2 text-sm">
+          <div className="flex items-center gap-2 text-sm">
             <span className="text-muted-foreground">Sort:</span>
-            <select
+            <Select
               value={sortMode}
-              onChange={(e) => setSortMode(e.target.value as SortMode)}
-              className="h-8 rounded-md border border-input bg-background px-2 text-sm"
+              onValueChange={(v) => setSortMode(v as SortMode)}
             >
-              <option value="custom">Custom order</option>
-              <option value="alpha">A to Z</option>
-              <option value="recent">Most recent</option>
-            </select>
-          </label>
+              <SelectTrigger size="sm" className="w-[150px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="custom">Custom order</SelectItem>
+                <SelectItem value="alpha">A to Z</SelectItem>
+                <SelectItem value="recent">Most recent</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
           <div className="relative max-w-xs">
             <Search className="pointer-events-none absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
@@ -227,13 +232,11 @@ export function StocklistFileTable({ files }: { files: StocklistFile[] }) {
                     <tr>
                       {canReorder && <th className="w-8 px-2 py-3" />}
                       <th className="w-10 px-4 py-3 text-left">
-                        <input
-                          ref={headerCheckboxRef}
-                          type="checkbox"
+                        <Checkbox
                           checked={allSelected}
-                          onChange={toggleAll}
+                          indeterminate={someSelected && !allSelected}
+                          onCheckedChange={toggleAll}
                           aria-label="Select all visible files"
-                          className="h-4 w-4 cursor-pointer"
                         />
                       </th>
                       <th className="px-4 py-3 text-left">File</th>
@@ -326,14 +329,14 @@ function SortableRow({
         </td>
       )}
       <td className="px-4 py-3">
-        <input
-          type="checkbox"
-          name="name"
-          value={file.name}
+        <Checkbox
           checked={selected}
-          onChange={onToggle}
-          className="h-4 w-4 cursor-pointer"
+          onCheckedChange={() => onToggle()}
+          aria-label={`Select ${file.name}`}
         />
+        {selected && (
+          <input type="hidden" name="name" value={file.name} />
+        )}
       </td>
       <td className="px-4 py-3 font-medium">{file.name}</td>
       <td className="px-4 py-3 text-muted-foreground">

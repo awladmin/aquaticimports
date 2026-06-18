@@ -3,6 +3,13 @@
 import { useMemo, useState } from "react";
 import { Download, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import {
   bucketFor,
@@ -73,18 +80,22 @@ export function StocklistFileList({ files }: { files: StocklistFile[] }) {
           ))}
         </div>
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-          <label className="flex items-center gap-2 text-sm">
+          <div className="flex items-center gap-2 text-sm">
             <span className="text-muted-foreground">Sort:</span>
-            <select
+            <Select
               value={sortMode}
-              onChange={(e) => setSortMode(e.target.value as SortMode)}
-              className="h-8 rounded-md border border-input bg-background px-2 text-sm"
+              onValueChange={(v) => setSortMode(v as SortMode)}
             >
-              <option value="custom">Custom order</option>
-              <option value="alpha">A to Z</option>
-              <option value="recent">Most recent</option>
-            </select>
-          </label>
+              <SelectTrigger size="sm" className="w-[150px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="custom">Custom order</SelectItem>
+                <SelectItem value="alpha">A to Z</SelectItem>
+                <SelectItem value="recent">Most recent</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
           <div className="relative max-w-xs">
             <Search className="pointer-events-none absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
