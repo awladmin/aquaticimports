@@ -90,7 +90,7 @@ export function StocklistFileList({ files }: { files: StocklistFile[] }) {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="custom">Custom order</SelectItem>
+                <SelectItem value="custom">Suggested</SelectItem>
                 <SelectItem value="alpha">A to Z</SelectItem>
                 <SelectItem value="recent">Most recent</SelectItem>
               </SelectContent>

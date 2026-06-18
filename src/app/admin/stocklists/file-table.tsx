@@ -184,7 +184,7 @@ export function StocklistFileTable({ files }: { files: StocklistFile[] }) {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="custom">Custom order</SelectItem>
+                <SelectItem value="custom">Suggested</SelectItem>
                 <SelectItem value="alpha">A to Z</SelectItem>
                 <SelectItem value="recent">Most recent</SelectItem>
               </SelectContent>
@@ -205,8 +205,8 @@ export function StocklistFileTable({ files }: { files: StocklistFile[] }) {
 
       {!canReorder && filtered.length > 0 && (
         <p className="mt-3 text-xs text-muted-foreground">
-          To rearrange the custom order, switch to the All tab, clear the
-          search, and set sort to Custom order.
+          To rearrange the suggested order, switch to the All tab, clear the
+          search, and set sort to Suggested.
         </p>
       )}
       {reorderError && (
