@@ -9,7 +9,7 @@ import {
   BUCKET_LABELS,
   type StocklistBucket,
 } from "@/lib/stocklist-filters";
-import { alphabeticalOrder } from "@/lib/stocklist-sort";
+import { alphabeticalOrder, recentFirstOrder } from "@/lib/stocklist-sort";
 
 type StocklistFile = {
   name: string;
@@ -19,7 +19,7 @@ type StocklistFile = {
 };
 
 type Tab = StocklistBucket | "all";
-type SortMode = "custom" | "alpha";
+type SortMode = "custom" | "alpha" | "recent";
 
 const TABS: Tab[] = ["this-week", "last-week", "older", "all"];
 
@@ -28,10 +28,11 @@ export function StocklistFileList({ files }: { files: StocklistFile[] }) {
   const [query, setQuery] = useState("");
   const [sortMode, setSortMode] = useState<SortMode>("custom");
 
-  const sorted = useMemo(
-    () => (sortMode === "alpha" ? alphabeticalOrder(files) : files),
-    [files, sortMode],
-  );
+  const sorted = useMemo(() => {
+    if (sortMode === "alpha") return alphabeticalOrder(files);
+    if (sortMode === "recent") return recentFirstOrder(files);
+    return files;
+  }, [files, sortMode]);
 
   const counts = useMemo(() => {
     const c = { "this-week": 0, "last-week": 0, "older": 0, all: sorted.length };
@@ -81,6 +82,7 @@ export function StocklistFileList({ files }: { files: StocklistFile[] }) {
             >
               <option value="custom">Custom order</option>
               <option value="alpha">A to Z</option>
+              <option value="recent">Most recent</option>
             </select>
           </label>
           <div className="relative max-w-xs">

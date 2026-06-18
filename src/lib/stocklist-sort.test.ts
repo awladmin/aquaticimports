@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { alphabeticalOrder, customOrder, type Positions } from "./stocklist-sort";
+import {
+  alphabeticalOrder,
+  customOrder,
+  recentFirstOrder,
+  type Positions,
+} from "./stocklist-sort";
 
 const FILES = [
   { name: "Cebu.xlsx", updatedAt: "2026-06-15T09:00:00Z" },
@@ -87,5 +92,27 @@ describe("alphabeticalOrder", () => {
     const result = alphabeticalOrder(original);
     expect(original.map((f) => f.name)).toEqual(["b.xlsx", "a.xlsx"]);
     expect(result.map((f) => f.name)).toEqual(["a.xlsx", "b.xlsx"]);
+  });
+});
+
+describe("recentFirstOrder", () => {
+  it("sorts newest first by updatedAt", () => {
+    const result = recentFirstOrder(FILES).map((f) => f.name);
+    expect(result).toEqual([
+      "Bali.xlsx",
+      "Cebu.xlsx",
+      "Indonesia.xlsx",
+      "Vietnam.xlsx",
+    ]);
+  });
+
+  it("treats missing updatedAt as oldest", () => {
+    const items = [
+      { name: "Missing.xlsx", updatedAt: null },
+      { name: "Old.xlsx", updatedAt: "2026-06-01T00:00:00Z" },
+      { name: "New.xlsx", updatedAt: "2026-06-15T00:00:00Z" },
+    ];
+    const result = recentFirstOrder(items).map((f) => f.name);
+    expect(result).toEqual(["New.xlsx", "Old.xlsx", "Missing.xlsx"]);
   });
 });

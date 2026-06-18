@@ -34,3 +34,11 @@ export function alphabeticalOrder<T extends Sortable>(files: T[]): T[] {
     a.name.localeCompare(b.name, "en", { sensitivity: "base", numeric: true }),
   );
 }
+
+export function recentFirstOrder<T extends Sortable>(files: T[]): T[] {
+  return [...files].sort((a, b) => {
+    const aTime = a.updatedAt ? Date.parse(a.updatedAt) : 0;
+    const bTime = b.updatedAt ? Date.parse(b.updatedAt) : 0;
+    return bTime - aTime;
+  });
+}

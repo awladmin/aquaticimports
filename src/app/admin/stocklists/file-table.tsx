@@ -28,6 +28,7 @@ import {
   BUCKET_LABELS,
   type StocklistBucket,
 } from "@/lib/stocklist-filters";
+import { alphabeticalOrder, recentFirstOrder } from "@/lib/stocklist-sort";
 import { deleteStocklists, reorderStocklists } from "./actions";
 
 type StocklistFile = {
@@ -38,12 +39,14 @@ type StocklistFile = {
 };
 
 type Tab = StocklistBucket | "all";
+type SortMode = "custom" | "alpha" | "recent";
 
 const TABS: Tab[] = ["this-week", "last-week", "older", "all"];
 
 export function StocklistFileTable({ files }: { files: StocklistFile[] }) {
   const [tab, setTab] = useState<Tab>("this-week");
   const [query, setQuery] = useState("");
+  const [sortMode, setSortMode] = useState<SortMode>("custom");
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [optimisticOrder, setOptimisticOrder] = useState<StocklistFile[] | null>(
     null,
@@ -62,8 +65,15 @@ export function StocklistFileTable({ files }: { files: StocklistFile[] }) {
     return optimisticOrder.every((f) => fileIds.has(f.id));
   }, [files, optimisticOrder]);
 
-  const displayed = optimisticInSync && optimisticOrder ? optimisticOrder : files;
-  const canReorder = tab === "all" && query.trim() === "";
+  const baseOrder =
+    optimisticInSync && optimisticOrder ? optimisticOrder : files;
+  const displayed = useMemo(() => {
+    if (sortMode === "alpha") return alphabeticalOrder(baseOrder);
+    if (sortMode === "recent") return recentFirstOrder(baseOrder);
+    return baseOrder;
+  }, [baseOrder, sortMode]);
+  const canReorder =
+    tab === "all" && query.trim() === "" && sortMode === "custom";
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -162,22 +172,36 @@ export function StocklistFileTable({ files }: { files: StocklistFile[] }) {
             </button>
           ))}
         </div>
-        <div className="relative max-w-xs">
-          <Search className="pointer-events-none absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input
-            type="search"
-            placeholder="Search filenames"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            className="pl-8"
-          />
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+          <label className="flex items-center gap-2 text-sm">
+            <span className="text-muted-foreground">Sort:</span>
+            <select
+              value={sortMode}
+              onChange={(e) => setSortMode(e.target.value as SortMode)}
+              className="h-8 rounded-md border border-input bg-background px-2 text-sm"
+            >
+              <option value="custom">Custom order</option>
+              <option value="alpha">A to Z</option>
+              <option value="recent">Most recent</option>
+            </select>
+          </label>
+          <div className="relative max-w-xs">
+            <Search className="pointer-events-none absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              type="search"
+              placeholder="Search filenames"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              className="pl-8"
+            />
+          </div>
         </div>
       </div>
 
       {!canReorder && filtered.length > 0 && (
         <p className="mt-3 text-xs text-muted-foreground">
-          To rearrange the custom order, switch to the All tab and clear the
-          search.
+          To rearrange the custom order, switch to the All tab, clear the
+          search, and set sort to Custom order.
         </p>
       )}
       {reorderError && (
