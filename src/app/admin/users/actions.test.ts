@@ -3,6 +3,7 @@ import {
   createUser,
   deleteUser,
   resetUserPassword,
+  updateUserName,
   updateUserRole,
 } from "./actions";
 
@@ -210,6 +211,58 @@ describe("updateUserRole", () => {
     const result = await updateUserRole(fd);
     expect(result.ok).toBe(true);
     expect(revalidatePathMock).toHaveBeenCalledWith("/admin/users");
+  });
+});
+
+describe("updateUserName", () => {
+  it("rejects when userId is missing", async () => {
+    const fd = new FormData();
+    fd.set("displayName", "New Name");
+    const result = await updateUserName(fd);
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.error).toMatch(/user id/i);
+  });
+
+  it("rejects when displayName is empty after trim", async () => {
+    const fd = new FormData();
+    fd.set("userId", "u-1");
+    fd.set("displayName", "   ");
+    const result = await updateUserName(fd);
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.error).toMatch(/name/i);
+  });
+
+  it("updates the profile row and revalidates on success", async () => {
+    const supabase = adminClientDouble({});
+    createAdminClientMock.mockResolvedValue(supabase);
+    const fd = new FormData();
+    fd.set("userId", "u-1");
+    fd.set("displayName", "  St Albans  ");
+    const result = await updateUserName(fd);
+    expect(result.ok).toBe(true);
+    expect(supabase.from).toHaveBeenCalledWith("profiles");
+    expect(revalidatePathMock).toHaveBeenCalledWith("/admin/users");
+  });
+
+  it("surfaces Supabase errors", async () => {
+    createAdminClientMock.mockResolvedValue(
+      adminClientDouble({ profileUpdateError: { message: "constraint violation" } }),
+    );
+    const fd = new FormData();
+    fd.set("userId", "u-1");
+    fd.set("displayName", "Test");
+    const result = await updateUserName(fd);
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.error).toMatch(/constraint/);
+  });
+
+  it("requires admin auth before doing anything", async () => {
+    requireAdminMock.mockRejectedValue(new Error("REDIRECT:/login"));
+    const fd = new FormData();
+    fd.set("userId", "u-1");
+    fd.set("displayName", "Test");
+    await expect(updateUserName(fd)).rejects.toThrow("REDIRECT:/login");
+    expect(createAdminClientMock).not.toHaveBeenCalled();
   });
 });
 

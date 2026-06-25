@@ -11,6 +11,7 @@ import {
   DeleteUserSubmit,
   ResetPasswordSubmit,
 } from "./submit-buttons";
+import { EditableName } from "./editable-name";
 
 type SearchParams = Promise<{
   action?: "created" | "reset";
@@ -110,8 +111,8 @@ export default async function AdminUsersPage({
               return (
                 <tr key={u.id} className="hover:bg-muted/30">
                   <td className="px-4 py-3 font-medium">{u.email}</td>
-                  <td className="px-4 py-3 text-muted-foreground">
-                    {u.displayName ?? "-"}
+                  <td className="px-4 py-3">
+                    <EditableName userId={u.id} name={u.displayName} />
                   </td>
                   <td className="px-4 py-3">
                     <Badge

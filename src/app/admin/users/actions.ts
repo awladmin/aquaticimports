@@ -72,6 +72,30 @@ export async function deleteUser(formData: FormData): Promise<void> {
   redirect("/admin/users");
 }
 
+export type UpdateNameResult = { ok: true } | { ok: false; error: string };
+
+export async function updateUserName(
+  formData: FormData,
+): Promise<UpdateNameResult> {
+  await requireAdmin();
+  const userId = (formData.get("userId") as string | null) ?? "";
+  const displayName =
+    (formData.get("displayName") as string | null)?.trim() ?? "";
+
+  if (!userId) return { ok: false, error: "Missing user id." };
+  if (!displayName) return { ok: false, error: "Name is required." };
+
+  const admin = await createAdminClient();
+  const { error } = await admin
+    .from("profiles")
+    .update({ display_name: displayName })
+    .eq("id", userId);
+  if (error) return { ok: false, error: error.message };
+
+  revalidatePath("/admin/users");
+  return { ok: true };
+}
+
 export async function updateUserRole(formData: FormData) {
   const session = await requireAdmin();
   const userId = (formData.get("userId") as string | null) ?? "";
