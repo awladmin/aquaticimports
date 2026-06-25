@@ -7,6 +7,10 @@ import Autoplay from "embla-carousel-autoplay";
 export type HeroSlide = {
   src: string;
   alt: string;
+  // Optional override for object-position when the subject isn't centred in
+  // the source image (e.g. "center top" if the subject sits near the top edge
+  // and would otherwise get cropped by object-cover).
+  objectPosition?: string;
 };
 
 export function HeroCarousel({ slides }: { slides: HeroSlide[] }) {
@@ -33,6 +37,7 @@ export function HeroCarousel({ slides }: { slides: HeroSlide[] }) {
         priority
         sizes="100vw"
         className="object-cover"
+        style={s.objectPosition ? { objectPosition: s.objectPosition } : undefined}
       />
     );
   }
@@ -52,6 +57,11 @@ export function HeroCarousel({ slides }: { slides: HeroSlide[] }) {
               priority={i === 0}
               sizes="100vw"
               className="object-cover"
+              style={
+                s.objectPosition
+                  ? { objectPosition: s.objectPosition }
+                  : undefined
+              }
             />
           </div>
         ))}

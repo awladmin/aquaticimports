@@ -21,7 +21,11 @@ const HERO_SLIDES: HeroSlide[] = [
     src: "/heros/ba-plane.jpg",
     alt: "British Airways Boeing 747 on the Heathrow apron, viewed from the wing of another aircraft",
   },
-  { src: "/heros/goldfish.jpg", alt: "Fancy orange goldfish in clear deep-blue water" },
+  {
+    src: "/heros/goldfish.jpg",
+    alt: "Fancy orange goldfish in clear deep-blue water",
+    objectPosition: "center top",
+  },
   { src: "/hero.jpg", alt: "Aquatic Imports cargo aircraft at Heathrow" },
   { src: "/heros/tetra.jpg", alt: "Lush planted freshwater aquarium with neon tetras" },
   {
