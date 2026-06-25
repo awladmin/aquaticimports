@@ -14,14 +14,17 @@ import {
   Handshake,
 } from "lucide-react";
 
-// Rotation alternates: BA plane (lead) → yellow tang reef → Aquatic Imports
-// plane → koi. Plane-then-fish pattern shows arrival followed by what's
-// being imported.
+// Rotation alternates planes and freshwater shots. Imagery refreshed June
+// 2026 to match Rob's preference for the old-site palette.
 const HERO_SLIDES: HeroSlide[] = [
-  { src: "/hero-2.jpg", alt: "British Airways aircraft at Heathrow" },
-  { src: "/hero-3.png", alt: "Yellow tang and clownfish on a bright sunlit reef" },
+  {
+    src: "/heros/ba-plane.jpg",
+    alt: "British Airways Boeing 747 on the Heathrow apron, viewed from the wing of another aircraft",
+  },
+  { src: "/heros/goldfish.jpg", alt: "Fancy orange goldfish in clear deep-blue water" },
   { src: "/hero.jpg", alt: "Aquatic Imports cargo aircraft at Heathrow" },
-  { src: "/hero-4.png", alt: "Orange and white koi in shallow sunlit water" },
+  { src: "/heros/tetra.jpg", alt: "Lush planted freshwater aquarium with neon tetras" },
+  { src: "/heros/koi.jpg", alt: "Top-down view of koi swimming in a clear turquoise pond" },
 ];
 
 export default async function HomePage() {
