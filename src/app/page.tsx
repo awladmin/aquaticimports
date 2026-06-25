@@ -24,6 +24,10 @@ const HERO_SLIDES: HeroSlide[] = [
   { src: "/heros/goldfish.jpg", alt: "Fancy orange goldfish in clear deep-blue water" },
   { src: "/hero.jpg", alt: "Aquatic Imports cargo aircraft at Heathrow" },
   { src: "/heros/tetra.jpg", alt: "Lush planted freshwater aquarium with neon tetras" },
+  {
+    src: "/heros/anthias.jpg",
+    alt: "School of orange lyretail anthias swimming around vivid pink soft coral on a tropical reef",
+  },
   { src: "/heros/koi.jpg", alt: "Top-down view of koi swimming in a clear turquoise pond" },
 ];
 
