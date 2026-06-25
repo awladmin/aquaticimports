@@ -14,25 +14,25 @@ import {
   Handshake,
 } from "lucide-react";
 
-// Rotation alternates planes and freshwater shots. Imagery refreshed June
-// 2026 to match Rob's preference for the old-site palette.
+// Hero rotation. Aquatic Imports plane sits at the end pending Rob's call
+// on whether to drop it.
 const HERO_SLIDES: HeroSlide[] = [
   {
     src: "/heros/ba-plane.jpg",
     alt: "British Airways Boeing 747 on the Heathrow apron, viewed from the wing of another aircraft",
   },
+  { src: "/heros/tetra.jpg", alt: "Lush planted freshwater aquarium with neon tetras" },
   {
     src: "/heros/goldfish.jpg",
     alt: "Fancy orange goldfish in clear deep-blue water",
     objectPosition: "center top",
   },
-  { src: "/hero.jpg", alt: "Aquatic Imports cargo aircraft at Heathrow" },
-  { src: "/heros/tetra.jpg", alt: "Lush planted freshwater aquarium with neon tetras" },
+  { src: "/heros/koi.jpg", alt: "Top-down view of koi swimming in a clear turquoise pond" },
   {
     src: "/heros/anthias.jpg",
     alt: "School of orange lyretail anthias swimming around vivid pink soft coral on a tropical reef",
   },
-  { src: "/heros/koi.jpg", alt: "Top-down view of koi swimming in a clear turquoise pond" },
+  { src: "/hero.jpg", alt: "Aquatic Imports cargo aircraft at Heathrow" },
 ];
 
 export default async function HomePage() {
