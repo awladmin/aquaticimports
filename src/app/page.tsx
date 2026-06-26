@@ -141,7 +141,7 @@ function AboutSection() {
           </div>
         </div>
 
-        <div className="space-y-5 text-base leading-relaxed text-foreground/90 lg:col-span-8">
+        <div className="space-y-5 text-base leading-relaxed text-foreground/90 lg:col-span-8 lg:text-justify">
           <p className="text-lg font-medium text-foreground">
             We are a specialist company, formed to exclusively supply quality
             aquatic livestock to wholesalers and consolidated importers of
@@ -200,18 +200,18 @@ function PublicPanels({ isLoggedIn }: { isLoggedIn: boolean }) {
     },
     {
       icon: Fish,
-      title: "Freshwater, marine &amp; plants",
-      body: "A full range from wild-caught Amazonian species and West African oddballs through to farmed discus, hard corals and aquatic plants.",
+      title: "Tropical Freshwater, Coldwater, Marine &amp; Aquatic Plants",
+      body: "A comprehensive range of livestock and plants for every kind of pond and aquarium.",
     },
     {
       icon: Truck,
       title: "Weekly UK delivery",
-      body: "Arrivals Tuesday through Friday, consolidated at our Slough facility and delivered direct to your holding.",
+      body: "Weekly imports with most shipments arriving to our Heathrow premises on a Tuesday, where routings allow. Same day delivery on our fleet of dedicated vehicles throughout mainland Great Britain.",
     },
     {
       icon: Award,
       title: "Established 1999",
-      body: "Over 25 years supplying some of the UK's largest wholesalers and consolidated importers. A name the trade knows.",
+      body: "Over 25 years supplying some of the UK's largest wholesalers and consolidated importers. A name the trade knows and trusts.",
     },
   ];
   return (
@@ -227,7 +227,7 @@ function PublicPanels({ isLoggedIn }: { isLoggedIn: boolean }) {
       </div>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {features.map(({ icon: Icon, title, body }) => (
-          <Card key={title} className="group border-border/60">
+          <Card key={title} className="group min-h-[260px] border-border/60">
             <CardContent className="p-6">
               <span className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-brand-100 text-brand-700 transition-colors group-hover:bg-brand-500 group-hover:text-white">
                 <Icon className="h-5 w-5" />
@@ -237,7 +237,7 @@ function PublicPanels({ isLoggedIn }: { isLoggedIn: boolean }) {
                 dangerouslySetInnerHTML={{ __html: title }}
               />
               <p
-                className="mt-2 text-sm leading-relaxed text-muted-foreground"
+                className="mt-2 text-sm leading-relaxed text-muted-foreground sm:text-justify"
                 dangerouslySetInnerHTML={{ __html: body }}
               />
             </CardContent>
@@ -250,7 +250,7 @@ function PublicPanels({ isLoggedIn }: { isLoggedIn: boolean }) {
           <CardContent className="flex flex-col items-start gap-6 p-8 sm:p-10 md:flex-row md:items-center md:justify-between">
             <div>
               <h3 className="text-2xl font-semibold tracking-tight">
-                Trade account needed to see stock lists
+                An approved Trade Account is required to access stocklists
               </h3>
               <p className="mt-2 max-w-xl text-muted-foreground">
                 Full stock lists and the weekly shipment schedule are visible
