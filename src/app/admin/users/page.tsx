@@ -5,18 +5,17 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { X } from "lucide-react";
-import { createUser, deleteUser, resetUserPassword } from "./actions";
+import { createUser, deleteUser, revokeUserSessions } from "./actions";
 import {
   CreateUserSubmit,
   DeleteUserSubmit,
-  ResetPasswordSubmit,
+  RevokeSessionsSubmit,
 } from "./submit-buttons";
 import { EditableName } from "./editable-name";
 
 type SearchParams = Promise<{
-  action?: "created" | "reset";
+  action?: "created" | "revoked";
   email?: string;
-  password?: string;
   error?: string;
 }>;
 
@@ -26,8 +25,7 @@ export default async function AdminUsersPage({
   searchParams: SearchParams;
 }) {
   const session = await requireAdmin();
-  const { action, email: shownEmail, password: shownPassword, error } =
-    await searchParams;
+  const { action, email: shownEmail, error } = await searchParams;
 
   const admin = await createAdminClient();
   const { data: usersData } = await admin.auth.admin.listUsers({ perPage: 200 });
@@ -57,12 +55,13 @@ export default async function AdminUsersPage({
       <header>
         <h1 className="text-2xl font-semibold tracking-tight">Trade users</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Create accounts for trade customers, reset forgotten passwords, and
-          remove users who no longer need access.
+          Create accounts for trade customers, sign sessions out remotely, and
+          remove users who no longer need access. Customers sign in with a
+          one-time code emailed to them; no passwords to manage.
         </p>
       </header>
 
-      {action && shownEmail && shownPassword && (
+      {action && shownEmail && (
         <div className="relative rounded-lg border border-emerald-200 bg-emerald-50 p-4 pr-10 text-sm">
           <Link
             href="/admin/users"
@@ -72,17 +71,13 @@ export default async function AdminUsersPage({
             <X className="h-4 w-4" />
           </Link>
           <p className="font-semibold text-emerald-900">
-            {action === "created" ? "User created." : "Password reset."}
+            {action === "created" ? "User created." : "Sessions revoked."}
           </p>
           <p className="mt-1 text-emerald-800">
             {action === "created"
-              ? "Share these credentials securely. The password is shown once and won't be visible after you leave this page."
-              : "Share this new password securely. It's shown once and won't be visible after you leave this page."}
+              ? `${shownEmail} can now sign in via the trade login by entering their email and the one-time code.`
+              : `${shownEmail} has been signed out on every device. They'll need to sign in again next visit.`}
           </p>
-          <dl className="mt-3 grid gap-1 font-mono text-xs text-emerald-900">
-            <div><span className="opacity-60">Email:&nbsp;</span>{shownEmail}</div>
-            <div><span className="opacity-60">Password:&nbsp;</span>{shownPassword}</div>
-          </dl>
         </div>
       )}
 
@@ -141,9 +136,10 @@ export default async function AdminUsersPage({
                         </span>
                       ) : (
                         <>
-                          <form action={handleResetPassword}>
+                          <form action={handleRevokeSessions}>
                             <input type="hidden" name="userId" value={u.id} />
-                            <ResetPasswordSubmit />
+                            <input type="hidden" name="email" value={u.email} />
+                            <RevokeSessionsSubmit />
                           </form>
                           <form action={deleteUser}>
                             <input type="hidden" name="userId" value={u.id} />
@@ -163,13 +159,14 @@ export default async function AdminUsersPage({
   );
 }
 
-async function handleResetPassword(formData: FormData) {
+async function handleRevokeSessions(formData: FormData) {
   "use server";
-  const result = await resetUserPassword(formData);
+  const result = await revokeUserSessions(formData);
   const { redirect } = await import("next/navigation");
+  const email = (formData.get("email") as string | null) ?? "";
   if (result.ok) {
     redirect(
-      `/admin/users?action=reset&email=${encodeURIComponent(result.email)}&password=${encodeURIComponent(result.password)}`,
+      `/admin/users?action=revoked&email=${encodeURIComponent(email)}`,
     );
   } else {
     redirect(`/admin/users?error=${encodeURIComponent(result.error)}`);
@@ -183,7 +180,7 @@ function CreateUserForm() {
     const { redirect } = await import("next/navigation");
     if (result.ok) {
       redirect(
-        `/admin/users?action=created&email=${encodeURIComponent(result.email)}&password=${encodeURIComponent(result.password)}`,
+        `/admin/users?action=created&email=${encodeURIComponent(result.email)}`,
       );
     } else {
       redirect(`/admin/users?error=${encodeURIComponent(result.error)}`);
@@ -197,8 +194,8 @@ function CreateUserForm() {
     >
       <p className="text-sm font-semibold">Add a user</p>
       <p className="mt-0.5 text-xs text-muted-foreground">
-        A 12-character password is auto-generated. You&apos;ll see it once
-        immediately after creation.
+        The user can sign in immediately by entering their email and the
+        one-time code we send them.
       </p>
       <div className="mt-3 grid gap-3 sm:grid-cols-[1fr_1fr_140px_auto]">
         <div className="space-y-1.5">

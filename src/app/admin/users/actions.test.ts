@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   createUser,
   deleteUser,
-  resetUserPassword,
+  revokeUserSessions,
   updateUserName,
   updateUserRole,
 } from "./actions";
@@ -32,9 +32,8 @@ function adminClientDouble(opts: {
   createUserResult?: { user: { id: string; email: string } } | null;
   createUserError?: { message: string } | null;
   profileUpdateError?: { message: string } | null;
-  updateUserResult?: { user: { id: string; email: string } } | null;
-  updateUserError?: { message: string } | null;
   deleteUserError?: { message: string } | null;
+  signOutError?: { message: string } | null;
 }) {
   return {
     auth: {
@@ -43,12 +42,11 @@ function adminClientDouble(opts: {
           data: opts.createUserResult ?? { user: { id: "new-user", email: "new@x.com" } },
           error: opts.createUserError ?? null,
         }),
-        updateUserById: vi.fn().mockResolvedValue({
-          data: opts.updateUserResult ?? { user: { id: "u-1", email: "u@x.com" } },
-          error: opts.updateUserError ?? null,
-        }),
         deleteUser: vi.fn().mockResolvedValue({
           error: opts.deleteUserError ?? null,
+        }),
+        signOut: vi.fn().mockResolvedValue({
+          error: opts.signOutError ?? null,
         }),
       },
     },
@@ -104,18 +102,21 @@ describe("createUser", () => {
     if (!result.ok) expect(result.error).toMatch(/role/i);
   });
 
-  it("creates user and returns generated password on success", async () => {
-    createAdminClientMock.mockResolvedValue(adminClientDouble({}));
+  it("creates user with no password (OTP-only sign-in) and returns the email", async () => {
+    const supabase = adminClientDouble({});
+    createAdminClientMock.mockResolvedValue(supabase);
     const fd = new FormData();
     fd.set("email", "Customer@TheirShop.CO.UK");
     fd.set("displayName", "Their Shop");
     fd.set("role", "trade");
     const result = await createUser(fd);
     expect(result.ok).toBe(true);
-    if (result.ok) {
-      expect(result.email).toBe("customer@theirshop.co.uk"); // lowercased
-      expect(result.password).toHaveLength(12);
-    }
+    if (result.ok) expect(result.email).toBe("customer@theirshop.co.uk");
+    // Crucial: no password argument passed to Supabase; users only OTP in.
+    expect(supabase.auth.admin.createUser).toHaveBeenCalledWith({
+      email: "customer@theirshop.co.uk",
+      email_confirm: true,
+    });
     expect(revalidatePathMock).toHaveBeenCalledWith("/admin/users");
   });
 
@@ -266,37 +267,41 @@ describe("updateUserName", () => {
   });
 });
 
-describe("resetUserPassword", () => {
+describe("revokeUserSessions", () => {
   it("rejects when userId is missing", async () => {
     const fd = new FormData();
-    const result = await resetUserPassword(fd);
+    const result = await revokeUserSessions(fd);
     expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.error).toMatch(/user id/i);
   });
 
-  it("returns email and a 12-char password on success", async () => {
-    createAdminClientMock.mockResolvedValue(adminClientDouble({}));
+  it("signs the user out globally and revalidates", async () => {
+    const supabase = adminClientDouble({});
+    createAdminClientMock.mockResolvedValue(supabase);
     const fd = new FormData();
-    fd.set("userId", "u-3");
-    const result = await resetUserPassword(fd);
+    fd.set("userId", "u-9");
+    const result = await revokeUserSessions(fd);
     expect(result.ok).toBe(true);
-    if (result.ok) {
-      expect(result.password).toHaveLength(12);
-      expect(result.email).toBe("u@x.com");
-    }
+    expect(supabase.auth.admin.signOut).toHaveBeenCalledWith("u-9", "global");
     expect(revalidatePathMock).toHaveBeenCalledWith("/admin/users");
   });
 
-  it("surfaces Supabase errors", async () => {
+  it("surfaces Supabase signOut errors", async () => {
     createAdminClientMock.mockResolvedValue(
-      adminClientDouble({
-        updateUserResult: null,
-        updateUserError: { message: "user not found" },
-      }),
+      adminClientDouble({ signOutError: { message: "user not found" } }),
     );
     const fd = new FormData();
     fd.set("userId", "u-ghost");
-    const result = await resetUserPassword(fd);
+    const result = await revokeUserSessions(fd);
     expect(result.ok).toBe(false);
     if (!result.ok) expect(result.error).toMatch(/not found/);
+  });
+
+  it("requires admin auth", async () => {
+    requireAdminMock.mockRejectedValue(new Error("REDIRECT:/login"));
+    const fd = new FormData();
+    fd.set("userId", "u-9");
+    await expect(revokeUserSessions(fd)).rejects.toThrow("REDIRECT:/login");
+    expect(createAdminClientMock).not.toHaveBeenCalled();
   });
 });

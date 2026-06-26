@@ -1,7 +1,7 @@
 "use client";
 
 import { useFormStatus } from "react-dom";
-import { Loader2, Trash2, KeyRound, UserPlus } from "lucide-react";
+import { Loader2, LogOut, Trash2, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export function CreateUserSubmit() {
@@ -26,7 +26,7 @@ export function CreateUserSubmit() {
   );
 }
 
-export function ResetPasswordSubmit() {
+export function RevokeSessionsSubmit() {
   const { pending } = useFormStatus();
   return (
     <Button
@@ -38,11 +38,11 @@ export function ResetPasswordSubmit() {
       className="text-xs"
     >
       {pending ? (
-        <Loader2 className="h-4 w-4 animate-spin" aria-label="Resetting" />
+        <Loader2 className="h-4 w-4 animate-spin" aria-label="Revoking" />
       ) : (
         <>
-          <KeyRound className="mr-1 h-4 w-4" />
-          Reset password
+          <LogOut className="mr-1 h-4 w-4" />
+          Sign out
         </>
       )}
     </Button>

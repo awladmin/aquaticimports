@@ -2,19 +2,12 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { randomBytes } from "node:crypto";
 import { createAdminClient } from "@/lib/supabase/server";
 import { requireAdmin } from "@/lib/auth";
 
 export type CreateUserResult =
-  | { ok: true; email: string; password: string }
+  | { ok: true; email: string }
   | { ok: false; error: string };
-
-function generatePassword() {
-  // 12 random bytes → 16 base64 chars; URL-safe alphabet has no +/= to filter,
-  // so the slice always lands on exactly 12 characters.
-  return randomBytes(12).toString("base64url").slice(0, 12);
-}
 
 export async function createUser(formData: FormData): Promise<CreateUserResult> {
   await requireAdmin();
@@ -29,12 +22,11 @@ export async function createUser(formData: FormData): Promise<CreateUserResult> 
     return { ok: false, error: "Invalid role." };
   }
 
-  const password = generatePassword();
   const admin = await createAdminClient();
 
+  // No password set: users sign in only via OTP.
   const { data, error } = await admin.auth.admin.createUser({
     email,
-    password,
     email_confirm: true,
   });
   if (error) return { ok: false, error: error.message };
@@ -50,7 +42,7 @@ export async function createUser(formData: FormData): Promise<CreateUserResult> 
   }
 
   revalidatePath("/admin/users");
-  return { ok: true, email, password };
+  return { ok: true, email };
 }
 
 export async function deleteUser(formData: FormData): Promise<void> {
@@ -67,33 +59,7 @@ export async function deleteUser(formData: FormData): Promise<void> {
   if (error) throw new Error(error.message);
 
   revalidatePath("/admin/users");
-  // Redirect to clean URL so any stale "User created" / "Password reset"
-  // banner from a previous action disappears.
   redirect("/admin/users");
-}
-
-export type UpdateNameResult = { ok: true } | { ok: false; error: string };
-
-export async function updateUserName(
-  formData: FormData,
-): Promise<UpdateNameResult> {
-  await requireAdmin();
-  const userId = (formData.get("userId") as string | null) ?? "";
-  const displayName =
-    (formData.get("displayName") as string | null)?.trim() ?? "";
-
-  if (!userId) return { ok: false, error: "Missing user id." };
-  if (!displayName) return { ok: false, error: "Name is required." };
-
-  const admin = await createAdminClient();
-  const { error } = await admin
-    .from("profiles")
-    .update({ display_name: displayName })
-    .eq("id", userId);
-  if (error) return { ok: false, error: error.message };
-
-  revalidatePath("/admin/users");
-  return { ok: true };
 }
 
 export async function updateUserRole(formData: FormData) {
@@ -120,27 +86,41 @@ export async function updateUserRole(formData: FormData) {
   return { ok: true };
 }
 
-export type ResetPasswordResult =
-  | { ok: true; email: string; password: string }
-  | { ok: false; error: string };
+export type UpdateNameResult = { ok: true } | { ok: false; error: string };
 
-export async function resetUserPassword(
+export async function updateUserName(
   formData: FormData,
-): Promise<ResetPasswordResult> {
+): Promise<UpdateNameResult> {
+  await requireAdmin();
+  const userId = (formData.get("userId") as string | null) ?? "";
+  const displayName =
+    (formData.get("displayName") as string | null)?.trim() ?? "";
+
+  if (!userId) return { ok: false, error: "Missing user id." };
+  if (!displayName) return { ok: false, error: "Name is required." };
+
+  const admin = await createAdminClient();
+  const { error } = await admin
+    .from("profiles")
+    .update({ display_name: displayName })
+    .eq("id", userId);
+  if (error) return { ok: false, error: error.message };
+
+  revalidatePath("/admin/users");
+  return { ok: true };
+}
+
+export async function revokeUserSessions(
+  formData: FormData,
+): Promise<{ ok: true } | { ok: false; error: string }> {
   await requireAdmin();
   const userId = (formData.get("userId") as string | null) ?? "";
   if (!userId) return { ok: false, error: "Missing user id." };
 
-  const password = generatePassword();
   const admin = await createAdminClient();
-
-  const { data, error } = await admin.auth.admin.updateUserById(userId, {
-    password,
-  });
-  if (error || !data.user) {
-    return { ok: false, error: error?.message ?? "Could not reset password." };
-  }
+  const { error } = await admin.auth.admin.signOut(userId, "global");
+  if (error) return { ok: false, error: error.message };
 
   revalidatePath("/admin/users");
-  return { ok: true, email: data.user.email ?? "", password };
+  return { ok: true };
 }
