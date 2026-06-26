@@ -88,6 +88,61 @@ export function SiteFooter() {
         </div>
       </div>
 
+      <div className="bg-white">
+        <div className="mx-auto flex max-w-7xl flex-col items-center gap-3 px-4 py-4 sm:flex-row sm:flex-wrap sm:justify-center sm:gap-x-8 sm:gap-y-3 sm:px-6 lg:px-8">
+          <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+            Members of
+          </span>
+          <div className="grid w-full grid-cols-3 place-items-center gap-4 sm:contents sm:w-auto">
+            <a
+              href="https://ornamentalfish.org"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="OATA - Ornamental Aquatic Trade Association"
+              className="block transition-opacity hover:opacity-80"
+            >
+              <Image
+                src="/affiliations/oata.png"
+                alt="OATA - Ornamental Aquatic Trade Association"
+                width={1050}
+                height={400}
+                className="h-8 w-auto sm:h-10"
+              />
+            </a>
+            <a
+              href="https://ofish.org"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="OFI - Ornamental Fish International"
+              className="block transition-opacity hover:opacity-80"
+            >
+              <Image
+                src="/affiliations/ofi.png"
+                alt="OFI - Ornamental Fish International"
+                width={680}
+                height={251}
+                className="h-8 w-auto sm:h-10"
+              />
+            </a>
+            <a
+              href="https://www.gov.uk/guidance/authorised-economic-operator-certification"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="UK Authorised Economic Operator"
+              className="block transition-opacity hover:opacity-80"
+            >
+              <Image
+                src="/affiliations/aeo.jpg"
+                alt="UK Authorised Economic Operator"
+                width={739}
+                height={324}
+                className="h-8 w-auto sm:h-10"
+              />
+            </a>
+          </div>
+        </div>
+      </div>
+
       <div className="border-t border-white/15">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-2 px-4 py-5 text-xs text-white/70 sm:flex-row sm:px-6 lg:px-8">
           <p>
