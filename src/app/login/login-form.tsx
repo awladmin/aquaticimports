@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { ArrowLeft, Loader2, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,9 +21,9 @@ export function LoginForm({ redirectTo }: { redirectTo: string }) {
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [pending, startTransition] = useTransition();
+  const [pending, setPending] = useState(false);
 
-  const sendCode = (e: React.FormEvent) => {
+  const sendCode = async (e: React.FormEvent) => {
     e.preventDefault();
     const cleanEmail = email.trim().toLowerCase();
     if (!cleanEmail) {
@@ -31,7 +31,8 @@ export function LoginForm({ redirectTo }: { redirectTo: string }) {
       return;
     }
     setError(null);
-    startTransition(async () => {
+    setPending(true);
+    try {
       // shouldCreateUser: false ensures only existing accounts can sign in;
       // unknown emails don't trigger a code or create a user. The error (if
       // any) is intentionally swallowed so the UI never reveals whether the
@@ -41,10 +42,12 @@ export function LoginForm({ redirectTo }: { redirectTo: string }) {
         options: { shouldCreateUser: false },
       });
       setStep("code");
-    });
+    } finally {
+      setPending(false);
+    }
   };
 
-  const verifyCode = (e: React.FormEvent) => {
+  const verifyCode = async (e: React.FormEvent) => {
     e.preventDefault();
     const cleanCode = code.trim();
     if (!cleanCode) {
@@ -52,23 +55,25 @@ export function LoginForm({ redirectTo }: { redirectTo: string }) {
       return;
     }
     setError(null);
-    startTransition(async () => {
-      const { error: verifyError } = await supabase.auth.verifyOtp({
-        email: email.trim().toLowerCase(),
-        token: cleanCode,
-        type: "email",
-      });
-      if (verifyError) {
-        setError(
-          "That code didn't work. It may have expired. Try again, or send a fresh one.",
-        );
-        return;
-      }
-      // Full reload so the freshly-written auth cookies are sent on the next
-      // request and the server-rendered page sees the session. Client-side
-      // navigation races the cookie write and would render us as logged-out.
-      window.location.href = redirectTo;
+    setPending(true);
+    const { error: verifyError } = await supabase.auth.verifyOtp({
+      email: email.trim().toLowerCase(),
+      token: cleanCode,
+      type: "email",
     });
+    if (verifyError) {
+      setError(
+        "That code didn't work. It may have expired. Try again, or send a fresh one.",
+      );
+      setPending(false);
+      return;
+    }
+    // Success: don't clear pending. The spinner stays spinning until the full
+    // page reload tears this component down, so the user never sees the button
+    // pop back to a clickable state in the gap between verify and navigation.
+    // Full reload (rather than client-side navigation) ensures the freshly
+    // written auth cookies are sent on the next request.
+    window.location.href = redirectTo;
   };
 
   if (step === "email") {
@@ -173,7 +178,8 @@ export function LoginForm({ redirectTo }: { redirectTo: string }) {
               setCode("");
               setError(null);
             }}
-            className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
+            disabled={pending}
+            className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground disabled:opacity-50"
           >
             <ArrowLeft className="h-3 w-3" />
             Use a different email
